@@ -1,54 +1,78 @@
+"use client";
+
 import BikeController from "@/components/bike/BikeController";
+
+import SkillsGarage from "@/components/locations/SkillsGarage";
+
+import { useGameStore } from "@/store/useGameStore";
 
 import Buildings from "./Buildings";
 import DestinationMarker from "./DestinationMarker";
 import Road from "./Road";
 
 export default function World() {
+  const aboutCompleted =
+    useGameStore(
+      (state) =>
+        state.aboutCompleted
+    );
+
+  const skillsCompleted =
+    useGameStore(
+      (state) =>
+        state.skillsCompleted
+    );
+
   return (
     <>
       {/* Sky */}
       <color
         attach="background"
-        args={["#10151c"]}
+        args={[
+          "#10151c",
+        ]}
       />
 
-      {/* Distance fog */}
+      {/* Fog */}
       <fog
         attach="fog"
         args={[
           "#10151c",
           55,
-          260,
+          280,
         ]}
       />
 
-      {/* Global ambient light */}
-      <ambientLight intensity={0.7} />
+      {/* Lighting */}
+      <ambientLight
+        intensity={0.7}
+      />
 
-      {/* Sun */}
       <directionalLight
-        position={[15, 25, 10]}
+        position={[
+          15,
+          25,
+          10,
+        ]}
         intensity={2.4}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={
+          2048
+        }
+        shadow-mapSize-height={
+          2048
+        }
       />
 
-      {/* Purple atmosphere */}
       <pointLight
-        position={[0, 7, -75]}
+        position={[
+          0,
+          7,
+          -75,
+        ]}
         color="#7c3aed"
-        intensity={35}
+        intensity={30}
         distance={80}
-      />
-
-      {/* Cyan atmosphere near destination */}
-      <pointLight
-        position={[0, 8, -120]}
-        color="#22d3ee"
-        intensity={18}
-        distance={40}
       />
 
       {/* Environment */}
@@ -56,8 +80,44 @@ export default function World() {
 
       <Buildings />
 
-      {/* First portfolio destination */}
-      <DestinationMarker />
+      {/* About */}
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -120,
+        ]}
+        index="01"
+        title="ABOUT VIEWPOINT"
+        color="#8b5cf6"
+        active={
+          !aboutCompleted
+        }
+        completed={
+          aboutCompleted
+        }
+      />
+
+      {/* Skills Garage */}
+      <SkillsGarage />
+
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -252,
+        ]}
+        index="02"
+        title="SKILLS GARAGE"
+        color="#22d3ee"
+        active={
+          aboutCompleted &&
+          !skillsCompleted
+        }
+        completed={
+          skillsCompleted
+        }
+      />
 
       {/* Player */}
       <BikeController />

@@ -4,6 +4,8 @@ import HUD from "@/components/hud/HUD";
 
 import AboutOverlay from "@/components/portfolio/AboutOverlay";
 
+import SkillsOverlay from "@/components/portfolio/SkillsOverlay";
+
 export default function Home() {
   return (
     <main
@@ -15,17 +17,20 @@ export default function Home() {
         margin: 0,
         padding: 0,
         overflow: "hidden",
-        background: "#10151c",
+        background:
+          "#10151c",
       }}
     >
-      {/* 3D Game World */}
+      {/* 3D Game */}
       <GameCanvas />
 
-      {/* Gameplay Interface */}
+      {/* HUD */}
       <HUD />
 
-      {/* Portfolio Cinematic */}
+      {/* Portfolio cinematics */}
       <AboutOverlay />
+
+      <SkillsOverlay />
     </main>
   );
 }

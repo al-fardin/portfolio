@@ -1,15 +1,11 @@
 "use client";
 
-import {
-  useGameStore,
-} from "@/store/useGameStore";
+import { useGameStore } from "@/store/useGameStore";
 
 function formatDistance(
   distance: number
 ) {
-  if (
-    distance >= 1000
-  ) {
+  if (distance >= 1000) {
     return `${(
       distance / 1000
     ).toFixed(1)} KM`;
@@ -19,29 +15,23 @@ function formatDistance(
 }
 
 export default function HUD() {
-  const speed =
-    useGameStore(
-      (state) =>
-        state.speed
-    );
+  const speed = useGameStore(
+    (state) => state.speed
+  );
 
-  const distance =
-    useGameStore(
-      (state) =>
-        state.distance
-    );
+  const distance = useGameStore(
+    (state) => state.distance
+  );
 
-  const progress =
-    useGameStore(
-      (state) =>
-        state.journeyProgress
-    );
+  const progress = useGameStore(
+    (state) =>
+      state.journeyProgress
+  );
 
-  const sceneMode =
-    useGameStore(
-      (state) =>
-        state.sceneMode
-    );
+  const sceneMode = useGameStore(
+    (state) =>
+      state.sceneMode
+  );
 
   const aboutCompleted =
     useGameStore(
@@ -49,10 +39,11 @@ export default function HUD() {
         state.aboutCompleted
     );
 
-  /*
-    Hide gameplay HUD
-    during cinematic
-  */
+  const skillsCompleted =
+    useGameStore(
+      (state) =>
+        state.skillsCompleted
+    );
 
   if (
     sceneMode !== "ride"
@@ -60,10 +51,46 @@ export default function HUD() {
     return null;
   }
 
+  let destination =
+    "ABOUT VIEWPOINT";
+
+  let objective =
+    "Reach About Viewpoint";
+
+  let journeyNumber =
+    "01";
+
+  if (
+    aboutCompleted &&
+    !skillsCompleted
+  ) {
+    destination =
+      "SKILLS GARAGE";
+
+    objective =
+      "Reach Skills Garage";
+
+    journeyNumber =
+      "02";
+  }
+
+  if (
+    skillsCompleted
+  ) {
+    destination =
+      "PROJECT CITY";
+
+    objective =
+      "Continue toward Project City";
+
+    journeyNumber =
+      "03";
+  }
+
   return (
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-white">
 
-      {/* Top left */}
+      {/* Brand */}
       <div className="absolute left-7 top-7">
 
         <p className="text-[10px] tracking-[0.45em] text-white/40">
@@ -71,7 +98,7 @@ export default function HUD() {
         </p>
 
         <p className="mt-1 text-sm font-medium tracking-wider">
-          JOURNEY / 01
+          JOURNEY / {journeyNumber}
         </p>
 
       </div>
@@ -79,41 +106,23 @@ export default function HUD() {
       {/* Navigation */}
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
-        {!aboutCompleted ? (
-          <>
-            <div className="text-3xl leading-none text-violet-400">
-              ↑
-            </div>
+        <div className="text-3xl leading-none text-violet-400">
+          ↑
+        </div>
 
-            <p className="mt-2 text-xs font-semibold tracking-[0.25em]">
-              ABOUT VIEWPOINT
-            </p>
+        <p className="mt-2 text-xs font-semibold tracking-[0.25em]">
+          {destination}
+        </p>
 
-            <p className="mt-1 font-mono text-xs text-white/55">
-              {formatDistance(
-                distance
-              )}
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="text-3xl leading-none text-cyan-300">
-              ↑
-            </div>
-
-            <p className="mt-2 text-xs font-semibold tracking-[0.25em]">
-              SKILLS GARAGE
-            </p>
-
-            <p className="mt-1 font-mono text-[10px] tracking-wider text-white/40">
-              ROUTE UPDATING
-            </p>
-          </>
-        )}
+        <p className="mt-1 font-mono text-xs text-white/55">
+          {formatDistance(
+            distance
+          )}
+        </p>
 
       </div>
 
-      {/* Journey progress */}
+      {/* Progress */}
       <div className="absolute right-7 top-7 text-right">
 
         <p className="text-[10px] tracking-[0.3em] text-white/40">
@@ -140,17 +149,15 @@ export default function HUD() {
         </p>
 
         <p className="mt-2 text-sm">
-          {!aboutCompleted
-            ? "Reach About Viewpoint"
-            : "Continue toward Skills Garage"}
+          {objective}
         </p>
 
       </div>
 
       {/* Controls */}
-      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 text-center">
+      <div className="absolute bottom-7 left-1/2 -translate-x-1/2">
 
-        <p className="font-mono text-[10px] tracking-[0.18em] text-white/35">
+        <p className="font-mono text-[10px] tracking-[0.18em] text-white/30">
           W ACCELERATE
           &nbsp;&nbsp;•&nbsp;&nbsp;
           A D STEER
@@ -160,7 +167,7 @@ export default function HUD() {
 
       </div>
 
-      {/* Speedometer */}
+      {/* Speed */}
       <div className="absolute bottom-7 right-7 text-right">
 
         <p className="font-mono text-5xl font-light leading-none">
