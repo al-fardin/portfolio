@@ -24,6 +24,8 @@ import Road from "./Road";
 
 import RoadsideDetails from "./RoadsideDetails";
 
+import ScenicEnvironment from "./ScenicEnvironment";
+
 import SkyEnvironment from "./SkyEnvironment";
 
 export default function World() {
@@ -66,16 +68,14 @@ export default function World() {
   return (
     <>
       {/* ====================== */}
-      {/* DYNAMIC SKY */}
+      {/* SKY + ATMOSPHERE */}
       {/* ====================== */}
 
       <SkyEnvironment />
 
       {/* ====================== */}
-      {/* LOCATION ACCENT LIGHTS */}
+      {/* LOCATION LIGHTING */}
       {/* ====================== */}
-
-      {/* About area */}
 
       <pointLight
         position={[
@@ -88,8 +88,6 @@ export default function World() {
         distance={65}
       />
 
-      {/* Skills area */}
-
       <pointLight
         position={[
           18,
@@ -100,8 +98,6 @@ export default function World() {
         intensity={14}
         distance={70}
       />
-
-      {/* Project City */}
 
       <pointLight
         position={[
@@ -114,8 +110,6 @@ export default function World() {
         distance={100}
       />
 
-      {/* Experience Highway */}
-
       <pointLight
         position={[
           -10,
@@ -127,8 +121,6 @@ export default function World() {
         distance={100}
       />
 
-      {/* Achievement Bridge */}
-
       <pointLight
         position={[
           10,
@@ -139,8 +131,6 @@ export default function World() {
         intensity={18}
         distance={110}
       />
-
-      {/* Contact Tower */}
 
       <pointLight
         position={[
@@ -165,12 +155,14 @@ export default function World() {
       />
 
       {/* ====================== */}
-      {/* BASE WORLD */}
+      {/* WORLD TERRAIN */}
       {/* ====================== */}
 
       <Road />
 
       <RoadsideDetails />
+
+      <ScenicEnvironment />
 
       <Buildings />
 
