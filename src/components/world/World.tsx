@@ -12,9 +12,7 @@ import ProjectCity from "@/components/locations/ProjectCity";
 
 import SkillsGarage from "@/components/locations/SkillsGarage";
 
-import {
-  useGameStore,
-} from "@/store/useGameStore";
+import { useGameStore } from "@/store/useGameStore";
 
 import Buildings from "./Buildings";
 
@@ -61,7 +59,9 @@ export default function World() {
 
   return (
     <>
-      {/* Night environment */}
+      {/* ====================== */}
+      {/* NIGHT SKY */}
+      {/* ====================== */}
 
       <color
         attach="background"
@@ -73,26 +73,37 @@ export default function World() {
       <fog
         attach="fog"
         args={[
-          "#050812",
-          75,
-          380,
+          "#07101a",
+          80,
+          390,
+        ]}
+      />
+
+      {/* ====================== */}
+      {/* BASE LIGHT */}
+      {/* ====================== */}
+
+      <hemisphereLight
+        args={[
+          "#92b7ff",
+          "#16120d",
+          0.75,
         ]}
       />
 
       <ambientLight
-        intensity={0.45}
+        intensity={0.22}
       />
 
-      {/* Moon-like light */}
-
+      {/* Moon */}
       <directionalLight
         position={[
-          -20,
-          30,
-          15,
+          -30,
+          45,
+          25,
         ]}
-        intensity={1.6}
-        color="#c7d2fe"
+        intensity={2}
+        color="#dbeafe"
         castShadow
         shadow-mapSize-width={
           2048
@@ -100,33 +111,109 @@ export default function World() {
         shadow-mapSize-height={
           2048
         }
+        shadow-camera-far={
+          120
+        }
+        shadow-camera-left={
+          -30
+        }
+        shadow-camera-right={
+          30
+        }
+        shadow-camera-top={
+          30
+        }
+        shadow-camera-bottom={
+          -30
+        }
       />
 
-      {/* Final cyan atmosphere */}
-
+      {/* Soft purple atmosphere */}
       <pointLight
         position={[
-          0,
-          15,
-          -900,
-        ]}
-        color="#22d3ee"
-        intensity={35}
-        distance={140}
-      />
-
-      <pointLight
-        position={[
-          20,
-          12,
-          -920,
+          -18,
+          10,
+          -60,
         ]}
         color="#7c3aed"
-        intensity={25}
+        intensity={18}
+        distance={85}
+      />
+
+      {/* Soft cyan atmosphere */}
+      <pointLight
+        position={[
+          18,
+          8,
+          -130,
+        ]}
+        color="#22d3ee"
+        intensity={15}
+        distance={80}
+      />
+
+      {/* Project city */}
+      <pointLight
+        position={[
+          15,
+          14,
+          -420,
+        ]}
+        color="#8b5cf6"
+        intensity={22}
         distance={100}
       />
 
-      {/* World */}
+      {/* Highway warm lighting */}
+      <pointLight
+        position={[
+          -10,
+          10,
+          -540,
+        ]}
+        color="#fb923c"
+        intensity={18}
+        distance={100}
+      />
+
+      {/* Achievement bridge */}
+      <pointLight
+        position={[
+          10,
+          12,
+          -700,
+        ]}
+        color="#f59e0b"
+        intensity={18}
+        distance={110}
+      />
+
+      {/* Final contact city */}
+      <pointLight
+        position={[
+          0,
+          20,
+          -900,
+        ]}
+        color="#22d3ee"
+        intensity={40}
+        distance={150}
+      />
+
+      <pointLight
+        position={[
+          25,
+          15,
+          -920,
+        ]}
+        color="#7c3aed"
+        intensity={24}
+        distance={100}
+      />
+
+      {/* ====================== */}
+      {/* WORLD */}
+      {/* ====================== */}
 
       <Road />
 
