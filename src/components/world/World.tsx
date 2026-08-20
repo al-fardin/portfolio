@@ -3,17 +3,28 @@
 import BikeController from "@/components/bike/BikeController";
 
 import AchievementBridge from "@/components/locations/AchievementBridge";
+
 import ContactTower from "@/components/locations/ContactTower";
+
 import ExperienceHighway from "@/components/locations/ExperienceHighway";
+
 import ProjectCity from "@/components/locations/ProjectCity";
+
 import SkillsGarage from "@/components/locations/SkillsGarage";
 
-import { useGameStore } from "@/store/useGameStore";
+import {
+  useGameStore,
+} from "@/store/useGameStore";
 
 import Buildings from "./Buildings";
+
 import DestinationMarker from "./DestinationMarker";
+
 import Road from "./Road";
+
 import RoadsideDetails from "./RoadsideDetails";
+
+import SkyEnvironment from "./SkyEnvironment";
 
 export default function World() {
   const aboutCompleted =
@@ -55,86 +66,42 @@ export default function World() {
   return (
     <>
       {/* ====================== */}
-      {/* NIGHT SKY */}
+      {/* DYNAMIC SKY */}
       {/* ====================== */}
 
-      <color
-        attach="background"
-        args={["#050812"]}
-      />
-
-      <fog
-        attach="fog"
-        args={[
-          "#07101a",
-          80,
-          390,
-        ]}
-      />
+      <SkyEnvironment />
 
       {/* ====================== */}
-      {/* GLOBAL LIGHTING */}
+      {/* LOCATION ACCENT LIGHTS */}
       {/* ====================== */}
 
-      <hemisphereLight
-        args={[
-          "#92b7ff",
-          "#16120d",
-          0.75,
-        ]}
-      />
-
-      <ambientLight
-        intensity={0.22}
-      />
-
-      {/* Moon */}
-
-      <directionalLight
-        position={[
-          -30,
-          45,
-          25,
-        ]}
-        intensity={2}
-        color="#dbeafe"
-        castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
-        shadow-camera-far={120}
-        shadow-camera-left={-30}
-        shadow-camera-right={30}
-        shadow-camera-top={30}
-        shadow-camera-bottom={-30}
-      />
-
-      {/* Purple atmosphere */}
+      {/* About area */}
 
       <pointLight
         position={[
           -18,
-          10,
-          -60,
+          9,
+          -100,
         ]}
-        color="#7c3aed"
-        intensity={18}
-        distance={85}
+        color="#8b5cf6"
+        intensity={12}
+        distance={65}
       />
 
-      {/* Cyan atmosphere */}
+      {/* Skills area */}
 
       <pointLight
         position={[
           18,
-          8,
-          -130,
+          9,
+          -250,
         ]}
         color="#22d3ee"
-        intensity={15}
-        distance={80}
+        intensity={14}
+        distance={70}
       />
 
-      {/* Project city */}
+      {/* Project City */}
 
       <pointLight
         position={[
@@ -147,7 +114,7 @@ export default function World() {
         distance={100}
       />
 
-      {/* Highway */}
+      {/* Experience Highway */}
 
       <pointLight
         position={[
@@ -160,7 +127,7 @@ export default function World() {
         distance={100}
       />
 
-      {/* Achievement */}
+      {/* Achievement Bridge */}
 
       <pointLight
         position={[
@@ -173,7 +140,7 @@ export default function World() {
         distance={110}
       />
 
-      {/* Contact */}
+      {/* Contact Tower */}
 
       <pointLight
         position={[
