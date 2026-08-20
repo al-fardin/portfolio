@@ -35,6 +35,12 @@ const SKILLS_STOP_Z =
 const PROJECT_TARGET_Z =
   -420;
 
+const PROJECT_STOP_Z =
+  -412;
+
+const EXPERIENCE_TARGET_Z =
+  -570;
+
 export default function BikeController() {
   const bikeRef =
     useRef<THREE.Group>(
@@ -172,10 +178,7 @@ export default function BikeController() {
   }, []);
 
   useFrame(
-    (
-      _,
-      delta
-    ) => {
+    (_, delta) => {
       if (
         !bikeRef.current ||
         !visualRef.current
@@ -190,7 +193,9 @@ export default function BikeController() {
         bikeRef.current;
 
       /*
-        CINEMATIC MODES
+        ==========================
+        CINEMATIC CAMERA
+        ==========================
       */
 
       if (
@@ -216,111 +221,130 @@ export default function BikeController() {
         keys.current.right =
           false;
 
+        let cameraPosition =
+          new THREE.Vector3(
+            bike.position.x +
+              8,
+
+            bike.position.y +
+              3.5,
+
+            bike.position.z +
+              7
+          );
+
+        let cameraLook =
+          new THREE.Vector3(
+            bike.position.x,
+            bike.position.y +
+              1.2,
+            bike.position.z -
+              7
+          );
+
         /*
-          ABOUT CAMERA
+          ABOUT
         */
 
         if (
           game.sceneMode ===
           "about"
         ) {
-          const targetCamera =
+          cameraPosition =
             new THREE.Vector3(
               bike.position.x +
                 8,
-
-              bike.position.y +
-                3.5,
-
+              3.5,
               bike.position.z +
                 7
             );
 
-          const smooth =
-            1 -
-            Math.exp(
-              -2.5 * delta
-            );
-
-          camera.position.lerp(
-            targetCamera,
-            smooth
-          );
-
-          const look =
+          cameraLook =
             new THREE.Vector3(
               bike.position.x,
-              bike.position.y +
-                1.2,
+              1.4,
               bike.position.z -
-                7
+                8
             );
-
-          cameraLookTarget.current.lerp(
-            look,
-            smooth
-          );
-
-          camera.lookAt(
-            cameraLookTarget.current
-          );
         }
 
         /*
-          SKILLS GARAGE CAMERA
+          SKILLS
         */
 
         if (
           game.sceneMode ===
           "skills"
         ) {
-          const targetCamera =
+          cameraPosition =
             new THREE.Vector3(
               bike.position.x -
                 7,
-
-              bike.position.y +
-                4.8,
-
+              4.8,
               bike.position.z +
                 7
             );
 
-          const smooth =
-            1 -
-            Math.exp(
-              -2.1 * delta
-            );
-
-          camera.position.lerp(
-            targetCamera,
-            smooth
-          );
-
-          /*
-            Look toward garage
-            on right side
-          */
-
-          const look =
+          cameraLook =
             new THREE.Vector3(
               11,
               3.2,
               -255
             );
-
-          cameraLookTarget.current.lerp(
-            look,
-            smooth
-          );
-
-          camera.lookAt(
-            cameraLookTarget.current
-          );
         }
 
         /*
-          Straighten motorcycle
+          PROJECT CITY
+
+          Wide cinematic angle.
+        */
+
+        if (
+          game.sceneMode ===
+          "projects"
+        ) {
+          cameraPosition =
+            new THREE.Vector3(
+              bike.position.x -
+                10,
+
+              8,
+
+              bike.position.z +
+                13
+            );
+
+          cameraLook =
+            new THREE.Vector3(
+              24,
+              9,
+              -423
+            );
+        }
+
+        const cinematicSmooth =
+          1 -
+          Math.exp(
+            -2.1 *
+              delta
+          );
+
+        camera.position.lerp(
+          cameraPosition,
+          cinematicSmooth
+        );
+
+        cameraLookTarget.current.lerp(
+          cameraLook,
+          cinematicSmooth
+        );
+
+        camera.lookAt(
+          cameraLookTarget.current
+        );
+
+        /*
+          Straighten bike
         */
 
         visualRef.current.rotation.x =
@@ -348,7 +372,9 @@ export default function BikeController() {
       }
 
       /*
+        ==========================
         RIDING
+        ==========================
       */
 
       const maxForwardSpeed =
@@ -372,17 +398,13 @@ export default function BikeController() {
         speed.current +=
           acceleration *
           delta;
-      }
-
-      else if (
+      } else if (
         keys.current.backward
       ) {
         speed.current -=
           braking *
           delta;
-      }
-
-      else {
+      } else {
         if (
           speed.current >
           0
@@ -426,17 +448,25 @@ export default function BikeController() {
         );
 
       /*
-        Determine next
-        portfolio destination
+        ==========================
+        CURRENT DESTINATION
+        ==========================
       */
 
       let targetZ =
-        PROJECT_TARGET_Z;
+        EXPERIENCE_TARGET_Z;
 
       let stopZ:
         | number
         | null =
         null;
+
+      let destination:
+        | "about"
+        | "skills"
+        | "projects"
+        | "experience" =
+        "experience";
 
       if (
         !game.aboutCompleted
@@ -446,9 +476,10 @@ export default function BikeController() {
 
         stopZ =
           ABOUT_STOP_Z;
-      }
 
-      else if (
+        destination =
+          "about";
+      } else if (
         !game.skillsCompleted
       ) {
         targetZ =
@@ -456,10 +487,24 @@ export default function BikeController() {
 
         stopZ =
           SKILLS_STOP_Z;
+
+        destination =
+          "skills";
+      } else if (
+        !game.projectsCompleted
+      ) {
+        targetZ =
+          PROJECT_TARGET_Z;
+
+        stopZ =
+          PROJECT_STOP_Z;
+
+        destination =
+          "projects";
       }
 
       /*
-        Auto slowdown
+        AUTO SLOWDOWN
       */
 
       if (
@@ -471,14 +516,14 @@ export default function BikeController() {
 
         if (
           distanceToStop <
-            24 &&
+            28 &&
           distanceToStop >
             0 &&
           speed.current >
             4
         ) {
           speed.current -=
-            17 *
+            18 *
             delta;
         }
 
@@ -496,7 +541,8 @@ export default function BikeController() {
           speed.current = 0;
 
           if (
-            !game.aboutCompleted
+            destination ===
+            "about"
           ) {
             useGameStore
               .getState()
@@ -506,7 +552,8 @@ export default function BikeController() {
           }
 
           if (
-            !game.skillsCompleted
+            destination ===
+            "skills"
           ) {
             useGameStore
               .getState()
@@ -514,11 +561,22 @@ export default function BikeController() {
 
             return;
           }
+
+          if (
+            destination ===
+            "projects"
+          ) {
+            useGameStore
+              .getState()
+              .enterProjects();
+
+            return;
+          }
         }
       }
 
       /*
-        Forward
+        Forward movement
       */
 
       bike.position.z -=
@@ -526,7 +584,9 @@ export default function BikeController() {
         delta;
 
       /*
-        Steering
+        ==========================
+        STEERING
+        ==========================
       */
 
       let steering = 0;
@@ -549,7 +609,6 @@ export default function BikeController() {
             speed.current
           ) /
             maxForwardSpeed,
-
           0,
           1
         );
@@ -577,7 +636,7 @@ export default function BikeController() {
         );
 
       /*
-        Bike visual steering
+        Bike animation
       */
 
       const targetYaw =
@@ -630,7 +689,9 @@ export default function BikeController() {
         );
 
       /*
+        ==========================
         CHASE CAMERA
+        ==========================
       */
 
       const desiredCamera =
@@ -648,7 +709,8 @@ export default function BikeController() {
       const cameraSmooth =
         1 -
         Math.exp(
-          -5 * delta
+          -5 *
+            delta
         );
 
       camera.position.lerp(
@@ -678,7 +740,9 @@ export default function BikeController() {
       );
 
       /*
+        ==========================
         HUD
+        ==========================
       */
 
       const displaySpeed =
@@ -691,7 +755,6 @@ export default function BikeController() {
       const worldDistance =
         Math.max(
           0,
-
           bike.position.z -
             targetZ
         );
@@ -702,8 +765,11 @@ export default function BikeController() {
             10
         );
 
-      let progress =
-        0;
+      let progress = 55;
+
+      /*
+        ABOUT 0 → 16
+      */
 
       if (
         !game.aboutCompleted
@@ -722,22 +788,22 @@ export default function BikeController() {
                 distanceMeters
               ) /
                 total,
-
               0,
               1
             ) * 16
           );
       }
 
+      /*
+        SKILLS 16 → 33
+      */
+
       else if (
         !game.skillsCompleted
       ) {
-        const start =
-          ABOUT_STOP_Z;
-
         const total =
           (
-            start -
+            ABOUT_STOP_Z -
             SKILLS_TARGET_Z
           ) * 10;
 
@@ -750,15 +816,38 @@ export default function BikeController() {
                 distanceMeters
               ) /
                 total,
-
               0,
               1
             ) * 17
           );
       }
 
-      else {
-        progress = 33;
+      /*
+        PROJECTS 33 → 55
+      */
+
+      else if (
+        !game.projectsCompleted
+      ) {
+        const total =
+          (
+            SKILLS_STOP_Z -
+            PROJECT_TARGET_Z
+          ) * 10;
+
+        progress =
+          33 +
+          Math.round(
+            THREE.MathUtils.clamp(
+              (
+                total -
+                distanceMeters
+              ) /
+                total,
+              0,
+              1
+            ) * 22
+          );
       }
 
       useGameStore

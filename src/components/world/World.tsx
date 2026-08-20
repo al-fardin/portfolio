@@ -2,12 +2,18 @@
 
 import BikeController from "@/components/bike/BikeController";
 
+import ProjectCity from "@/components/locations/ProjectCity";
+
 import SkillsGarage from "@/components/locations/SkillsGarage";
 
-import { useGameStore } from "@/store/useGameStore";
+import {
+  useGameStore,
+} from "@/store/useGameStore";
 
 import Buildings from "./Buildings";
+
 import DestinationMarker from "./DestinationMarker";
+
 import Road from "./Road";
 
 export default function World() {
@@ -23,29 +29,38 @@ export default function World() {
         state.skillsCompleted
     );
 
+  const projectsCompleted =
+    useGameStore(
+      (state) =>
+        state.projectsCompleted
+    );
+
   return (
     <>
       {/* Sky */}
+
       <color
         attach="background"
         args={[
-          "#10151c",
+          "#0c1119",
         ]}
       />
 
       {/* Fog */}
+
       <fog
         attach="fog"
         args={[
-          "#10151c",
-          55,
-          280,
+          "#0c1119",
+          60,
+          300,
         ]}
       />
 
       {/* Lighting */}
+
       <ambientLight
-        intensity={0.7}
+        intensity={0.65}
       />
 
       <directionalLight
@@ -54,7 +69,7 @@ export default function World() {
           25,
           10,
         ]}
-        intensity={2.4}
+        intensity={2.3}
         castShadow
         shadow-mapSize-width={
           2048
@@ -71,16 +86,18 @@ export default function World() {
           -75,
         ]}
         color="#7c3aed"
-        intensity={30}
+        intensity={25}
         distance={80}
       />
 
-      {/* Environment */}
+      {/* Base World */}
+
       <Road />
 
       <Buildings />
 
-      {/* About */}
+      {/* ABOUT */}
+
       <DestinationMarker
         position={[
           0,
@@ -98,7 +115,8 @@ export default function World() {
         }
       />
 
-      {/* Skills Garage */}
+      {/* SKILLS */}
+
       <SkillsGarage />
 
       <DestinationMarker
@@ -119,7 +137,30 @@ export default function World() {
         }
       />
 
+      {/* PROJECT CITY */}
+
+      <ProjectCity />
+
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -420,
+        ]}
+        index="03"
+        title="PROJECT CITY"
+        color="#a855f7"
+        active={
+          skillsCompleted &&
+          !projectsCompleted
+        }
+        completed={
+          projectsCompleted
+        }
+      />
+
       {/* Player */}
+
       <BikeController />
     </>
   );

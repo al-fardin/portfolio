@@ -1,11 +1,15 @@
 "use client";
 
-import { useGameStore } from "@/store/useGameStore";
+import {
+  useGameStore,
+} from "@/store/useGameStore";
 
 function formatDistance(
   distance: number
 ) {
-  if (distance >= 1000) {
+  if (
+    distance >= 1000
+  ) {
     return `${(
       distance / 1000
     ).toFixed(1)} KM`;
@@ -15,23 +19,29 @@ function formatDistance(
 }
 
 export default function HUD() {
-  const speed = useGameStore(
-    (state) => state.speed
-  );
+  const speed =
+    useGameStore(
+      (state) =>
+        state.speed
+    );
 
-  const distance = useGameStore(
-    (state) => state.distance
-  );
+  const distance =
+    useGameStore(
+      (state) =>
+        state.distance
+    );
 
-  const progress = useGameStore(
-    (state) =>
-      state.journeyProgress
-  );
+  const progress =
+    useGameStore(
+      (state) =>
+        state.journeyProgress
+    );
 
-  const sceneMode = useGameStore(
-    (state) =>
-      state.sceneMode
-  );
+  const sceneMode =
+    useGameStore(
+      (state) =>
+        state.sceneMode
+    );
 
   const aboutCompleted =
     useGameStore(
@@ -45,8 +55,15 @@ export default function HUD() {
         state.skillsCompleted
     );
 
+  const projectsCompleted =
+    useGameStore(
+      (state) =>
+        state.projectsCompleted
+    );
+
   if (
-    sceneMode !== "ride"
+    sceneMode !==
+    "ride"
   ) {
     return null;
   }
@@ -57,7 +74,7 @@ export default function HUD() {
   let objective =
     "Reach About Viewpoint";
 
-  let journeyNumber =
+  let number =
     "01";
 
   if (
@@ -70,27 +87,42 @@ export default function HUD() {
     objective =
       "Reach Skills Garage";
 
-    journeyNumber =
+    number =
       "02";
   }
 
   if (
-    skillsCompleted
+    skillsCompleted &&
+    !projectsCompleted
   ) {
     destination =
       "PROJECT CITY";
 
     objective =
-      "Continue toward Project City";
+      "Enter Project City";
 
-    journeyNumber =
+    number =
       "03";
+  }
+
+  if (
+    projectsCompleted
+  ) {
+    destination =
+      "EXPERIENCE HIGHWAY";
+
+    objective =
+      "Continue toward Experience Highway";
+
+    number =
+      "04";
   }
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-white">
 
       {/* Brand */}
+
       <div className="absolute left-7 top-7">
 
         <p className="text-[10px] tracking-[0.45em] text-white/40">
@@ -98,12 +130,13 @@ export default function HUD() {
         </p>
 
         <p className="mt-1 text-sm font-medium tracking-wider">
-          JOURNEY / {journeyNumber}
+          JOURNEY / {number}
         </p>
 
       </div>
 
       {/* Navigation */}
+
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
         <div className="text-3xl leading-none text-violet-400">
@@ -123,6 +156,7 @@ export default function HUD() {
       </div>
 
       {/* Progress */}
+
       <div className="absolute right-7 top-7 text-right">
 
         <p className="text-[10px] tracking-[0.3em] text-white/40">
@@ -142,6 +176,7 @@ export default function HUD() {
       </div>
 
       {/* Objective */}
+
       <div className="absolute bottom-7 left-7">
 
         <p className="text-[9px] tracking-[0.35em] text-white/35">
@@ -155,6 +190,7 @@ export default function HUD() {
       </div>
 
       {/* Controls */}
+
       <div className="absolute bottom-7 left-1/2 -translate-x-1/2">
 
         <p className="font-mono text-[10px] tracking-[0.18em] text-white/30">
@@ -168,6 +204,7 @@ export default function HUD() {
       </div>
 
       {/* Speed */}
+
       <div className="absolute bottom-7 right-7 text-right">
 
         <p className="font-mono text-5xl font-light leading-none">
