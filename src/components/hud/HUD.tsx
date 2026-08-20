@@ -178,8 +178,6 @@ export default function HUD() {
   return (
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-white">
 
-      {/* Brand */}
-
       <div className="absolute left-7 top-7">
 
         <p className="text-[10px] tracking-[0.45em] text-white/40">
@@ -191,8 +189,6 @@ export default function HUD() {
         </p>
 
       </div>
-
-      {/* Navigation */}
 
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
@@ -214,8 +210,6 @@ export default function HUD() {
 
       </div>
 
-      {/* Journey */}
-
       <div className="absolute right-7 top-7 text-right">
 
         <p className="text-[10px] tracking-[0.3em] text-white/40">
@@ -234,8 +228,6 @@ export default function HUD() {
 
       </div>
 
-      {/* Objective */}
-
       <div className="absolute bottom-7 left-7">
 
         <p className="text-[9px] tracking-[0.35em] text-white/35">
@@ -248,8 +240,6 @@ export default function HUD() {
 
       </div>
 
-      {/* Controls */}
-
       <div className="absolute bottom-7 left-1/2 -translate-x-1/2">
 
         <p className="font-mono text-[10px] tracking-[0.18em] text-white/30">
@@ -261,8 +251,6 @@ export default function HUD() {
         </p>
 
       </div>
-
-      {/* Speed */}
 
       <div className="absolute bottom-7 right-7 text-right">
 
@@ -279,7 +267,7 @@ export default function HUD() {
           KM/H
         </p>
 
-        <p className="mt-2 font-mono text-[9px] text-violet-300/70">
+        <p className="mt-2 font-mono text-[9px] text-cyan-300/70">
           AUTO
         </p>
 

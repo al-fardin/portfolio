@@ -10,7 +10,9 @@ export type SceneMode =
   | "skills"
   | "projects"
   | "experience"
-  | "achievements";
+  | "achievements"
+  | "contact"
+  | "complete";
 
 type GameState = {
   speed: number;
@@ -32,6 +34,8 @@ type GameState = {
   experienceCompleted: boolean;
 
   achievementsCompleted: boolean;
+
+  contactCompleted: boolean;
 
   selectedProject: ProjectId;
 
@@ -69,6 +73,10 @@ type GameState = {
   enterAchievements: () => void;
 
   continueFromAchievements: () => void;
+
+  enterContact: () => void;
+
+  completeJourney: () => void;
 
   selectProject: (
     project: ProjectId
@@ -110,6 +118,8 @@ export const useGameStore =
     experienceCompleted: false,
 
     achievementsCompleted: false,
+
+    contactCompleted: false,
 
     selectedProject: "edunexus",
 
@@ -219,6 +229,23 @@ export const useGameStore =
         achievementsCompleted: true,
         destinationReached: false,
         journeyProgress: 88,
+      }),
+
+    enterContact: () =>
+      set({
+        speed: 0,
+        sceneMode: "contact",
+        destinationReached: true,
+        journeyProgress: 100,
+      }),
+
+    completeJourney: () =>
+      set({
+        speed: 0,
+        sceneMode: "complete",
+        contactCompleted: true,
+        destinationReached: true,
+        journeyProgress: 100,
       }),
 
     selectProject: (

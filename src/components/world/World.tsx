@@ -4,6 +4,8 @@ import BikeController from "@/components/bike/BikeController";
 
 import AchievementBridge from "@/components/locations/AchievementBridge";
 
+import ContactTower from "@/components/locations/ContactTower";
+
 import ExperienceHighway from "@/components/locations/ExperienceHighway";
 
 import ProjectCity from "@/components/locations/ProjectCity";
@@ -51,39 +53,46 @@ export default function World() {
         state.achievementsCompleted
     );
 
+  const contactCompleted =
+    useGameStore(
+      (state) =>
+        state.contactCompleted
+    );
+
   return (
     <>
-      {/* Dark sunset / early night */}
+      {/* Night environment */}
 
       <color
         attach="background"
         args={[
-          "#090d15",
+          "#050812",
         ]}
       />
 
       <fog
         attach="fog"
         args={[
-          "#090d15",
-          70,
-          350,
+          "#050812",
+          75,
+          380,
         ]}
       />
 
-      {/* Global lighting */}
-
       <ambientLight
-        intensity={0.55}
+        intensity={0.45}
       />
+
+      {/* Moon-like light */}
 
       <directionalLight
         position={[
+          -20,
+          30,
           15,
-          25,
-          10,
         ]}
-        intensity={1.9}
+        intensity={1.6}
+        color="#c7d2fe"
         castShadow
         shadow-mapSize-width={
           2048
@@ -93,29 +102,31 @@ export default function World() {
         }
       />
 
-      <pointLight
-        position={[
-          0,
-          8,
-          -620,
-        ]}
-        color="#f59e0b"
-        intensity={20}
-        distance={90}
-      />
+      {/* Final cyan atmosphere */}
 
       <pointLight
         position={[
           0,
-          10,
-          -760,
+          15,
+          -900,
         ]}
         color="#22d3ee"
-        intensity={24}
+        intensity={35}
+        distance={140}
+      />
+
+      <pointLight
+        position={[
+          20,
+          12,
+          -920,
+        ]}
+        color="#7c3aed"
+        intensity={25}
         distance={100}
       />
 
-      {/* Base */}
+      {/* World */}
 
       <Road />
 
@@ -206,7 +217,7 @@ export default function World() {
         }
       />
 
-      {/* ACHIEVEMENT BRIDGE */}
+      {/* ACHIEVEMENTS */}
 
       <AchievementBridge />
 
@@ -228,7 +239,9 @@ export default function World() {
         }
       />
 
-      {/* Contact Tower preview marker */}
+      {/* CONTACT */}
+
+      <ContactTower />
 
       <DestinationMarker
         position={[
@@ -240,12 +253,15 @@ export default function World() {
         title="CONTACT TOWER"
         color="#22d3ee"
         active={
-          achievementsCompleted
+          achievementsCompleted &&
+          !contactCompleted
         }
-        completed={false}
+        completed={
+          contactCompleted
+        }
       />
 
-      {/* Player */}
+      {/* PLAYER */}
 
       <BikeController />
     </>

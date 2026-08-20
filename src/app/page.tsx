@@ -10,7 +10,11 @@ import AboutOverlay from "@/components/portfolio/AboutOverlay";
 
 import AchievementOverlay from "@/components/portfolio/AchievementOverlay";
 
+import ContactOverlay from "@/components/portfolio/ContactOverlay";
+
 import ExperienceOverlay from "@/components/portfolio/ExperienceOverlay";
+
+import JourneyCompleteOverlay from "@/components/portfolio/JourneyCompleteOverlay";
 
 import ProjectsOverlay from "@/components/portfolio/ProjectsOverlay";
 
@@ -32,7 +36,7 @@ export default function Home() {
         overflow: "hidden",
 
         background:
-          "#090d15",
+          "#050812",
       }}
     >
       {/* 3D WORLD */}
@@ -58,6 +62,10 @@ export default function Home() {
       <ExperienceOverlay />
 
       <AchievementOverlay />
+
+      <ContactOverlay />
+
+      <JourneyCompleteOverlay />
     </main>
   );
 }
