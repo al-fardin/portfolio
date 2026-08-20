@@ -9,7 +9,8 @@ export type SceneMode =
   | "about"
   | "skills"
   | "projects"
-  | "experience";
+  | "experience"
+  | "achievements";
 
 type GameState = {
   speed: number;
@@ -30,9 +31,15 @@ type GameState = {
 
   experienceCompleted: boolean;
 
+  achievementsCompleted: boolean;
+
   selectedProject: ProjectId;
 
   activeExperienceMilestone:
+    | string
+    | null;
+
+  activeAchievementMilestone:
     | string
     | null;
 
@@ -59,6 +66,10 @@ type GameState = {
 
   continueFromExperience: () => void;
 
+  enterAchievements: () => void;
+
+  continueFromAchievements: () => void;
+
   selectProject: (
     project: ProjectId
   ) => void;
@@ -68,6 +79,13 @@ type GameState = {
   ) => void;
 
   clearExperienceMilestone:
+    () => void;
+
+  showAchievementMilestone: (
+    id: string
+  ) => void;
+
+  clearAchievementMilestone:
     () => void;
 };
 
@@ -91,9 +109,14 @@ export const useGameStore =
 
     experienceCompleted: false,
 
+    achievementsCompleted: false,
+
     selectedProject: "edunexus",
 
     activeExperienceMilestone:
+      null,
+
+    activeAchievementMilestone:
       null,
 
     updateRide: (
@@ -179,6 +202,25 @@ export const useGameStore =
         journeyProgress: 72,
       }),
 
+    enterAchievements: () =>
+      set({
+        speed: 0,
+        sceneMode: "achievements",
+        destinationReached: true,
+        journeyProgress: 88,
+        activeAchievementMilestone:
+          null,
+      }),
+
+    continueFromAchievements: () =>
+      set({
+        speed: 0,
+        sceneMode: "ride",
+        achievementsCompleted: true,
+        destinationReached: false,
+        journeyProgress: 88,
+      }),
+
     selectProject: (
       selectedProject
     ) =>
@@ -197,6 +239,20 @@ export const useGameStore =
       () =>
         set({
           activeExperienceMilestone:
+            null,
+        }),
+
+    showAchievementMilestone: (
+      activeAchievementMilestone
+    ) =>
+      set({
+        activeAchievementMilestone,
+      }),
+
+    clearAchievementMilestone:
+      () =>
+        set({
+          activeAchievementMilestone:
             null,
         }),
   }));

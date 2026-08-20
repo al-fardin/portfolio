@@ -1,10 +1,14 @@
 import GameCanvas from "@/components/game/GameCanvas";
 
+import AchievementToast from "@/components/hud/AchievementToast";
+
 import ExperienceToast from "@/components/hud/ExperienceToast";
 
 import HUD from "@/components/hud/HUD";
 
 import AboutOverlay from "@/components/portfolio/AboutOverlay";
+
+import AchievementOverlay from "@/components/portfolio/AchievementOverlay";
 
 import ExperienceOverlay from "@/components/portfolio/ExperienceOverlay";
 
@@ -28,20 +32,22 @@ export default function Home() {
         overflow: "hidden",
 
         background:
-          "#0c1119",
+          "#090d15",
       }}
     >
-      {/* 3D GAME WORLD */}
+      {/* 3D WORLD */}
 
       <GameCanvas />
 
-      {/* GAME HUD */}
+      {/* HUD */}
 
       <HUD />
 
       <ExperienceToast />
 
-      {/* PORTFOLIO CINEMATICS */}
+      <AchievementToast />
+
+      {/* CINEMATICS */}
 
       <AboutOverlay />
 
@@ -50,6 +56,8 @@ export default function Home() {
       <ProjectsOverlay />
 
       <ExperienceOverlay />
+
+      <AchievementOverlay />
     </main>
   );
 }

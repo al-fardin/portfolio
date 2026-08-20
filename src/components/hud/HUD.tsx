@@ -67,9 +67,14 @@ export default function HUD() {
         state.experienceCompleted
     );
 
+  const achievementsCompleted =
+    useGameStore(
+      (state) =>
+        state.achievementsCompleted
+    );
+
   if (
-    sceneMode !==
-    "ride"
+    sceneMode !== "ride"
   ) {
     return null;
   }
@@ -83,6 +88,9 @@ export default function HUD() {
   let number =
     "01";
 
+  let navColor =
+    "text-violet-400";
+
   if (
     aboutCompleted &&
     !skillsCompleted
@@ -95,6 +103,9 @@ export default function HUD() {
 
     number =
       "02";
+
+    navColor =
+      "text-cyan-300";
   }
 
   if (
@@ -109,6 +120,9 @@ export default function HUD() {
 
     number =
       "03";
+
+    navColor =
+      "text-violet-400";
   }
 
   if (
@@ -123,19 +137,42 @@ export default function HUD() {
 
     number =
       "04";
+
+    navColor =
+      "text-orange-300";
   }
 
   if (
-    experienceCompleted
+    experienceCompleted &&
+    !achievementsCompleted
   ) {
     destination =
       "ACHIEVEMENT BRIDGE";
 
     objective =
-      "Ride toward Achievement Bridge";
+      "Cross Achievement Bridge";
 
     number =
       "05";
+
+    navColor =
+      "text-amber-300";
+  }
+
+  if (
+    achievementsCompleted
+  ) {
+    destination =
+      "CONTACT TOWER";
+
+    objective =
+      "Reach the final destination";
+
+    number =
+      "06";
+
+    navColor =
+      "text-cyan-300";
   }
 
   return (
@@ -160,12 +197,7 @@ export default function HUD() {
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
         <div
-          className={`text-3xl leading-none ${
-            projectsCompleted &&
-            !experienceCompleted
-              ? "text-orange-300"
-              : "text-violet-400"
-          }`}
+          className={`text-3xl leading-none ${navColor}`}
         >
           ↑
         </div>

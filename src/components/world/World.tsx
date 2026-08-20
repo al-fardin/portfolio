@@ -2,6 +2,8 @@
 
 import BikeController from "@/components/bike/BikeController";
 
+import AchievementBridge from "@/components/locations/AchievementBridge";
+
 import ExperienceHighway from "@/components/locations/ExperienceHighway";
 
 import ProjectCity from "@/components/locations/ProjectCity";
@@ -43,32 +45,36 @@ export default function World() {
         state.experienceCompleted
     );
 
+  const achievementsCompleted =
+    useGameStore(
+      (state) =>
+        state.achievementsCompleted
+    );
+
   return (
     <>
-      {/* Sky */}
+      {/* Dark sunset / early night */}
 
       <color
         attach="background"
         args={[
-          "#0c1119",
+          "#090d15",
         ]}
       />
-
-      {/* Fog */}
 
       <fog
         attach="fog"
         args={[
-          "#0c1119",
-          65,
-          330,
+          "#090d15",
+          70,
+          350,
         ]}
       />
 
-      {/* Main lighting */}
+      {/* Global lighting */}
 
       <ambientLight
-        intensity={0.65}
+        intensity={0.55}
       />
 
       <directionalLight
@@ -77,7 +83,7 @@ export default function World() {
           25,
           10,
         ]}
-        intensity={2.3}
+        intensity={1.9}
         castShadow
         shadow-mapSize-width={
           2048
@@ -90,21 +96,32 @@ export default function World() {
       <pointLight
         position={[
           0,
-          7,
-          -75,
+          8,
+          -620,
         ]}
-        color="#7c3aed"
-        intensity={25}
-        distance={80}
+        color="#f59e0b"
+        intensity={20}
+        distance={90}
       />
 
-      {/* Base environment */}
+      <pointLight
+        position={[
+          0,
+          10,
+          -760,
+        ]}
+        color="#22d3ee"
+        intensity={24}
+        distance={100}
+      />
+
+      {/* Base */}
 
       <Road />
 
       <Buildings />
 
-      {/* About */}
+      {/* ABOUT */}
 
       <DestinationMarker
         position={[
@@ -123,7 +140,7 @@ export default function World() {
         }
       />
 
-      {/* Skills */}
+      {/* SKILLS */}
 
       <SkillsGarage />
 
@@ -145,7 +162,7 @@ export default function World() {
         }
       />
 
-      {/* Projects */}
+      {/* PROJECTS */}
 
       <ProjectCity />
 
@@ -167,7 +184,7 @@ export default function World() {
         }
       />
 
-      {/* Experience */}
+      {/* EXPERIENCE */}
 
       <ExperienceHighway />
 
@@ -187,6 +204,45 @@ export default function World() {
         completed={
           experienceCompleted
         }
+      />
+
+      {/* ACHIEVEMENT BRIDGE */}
+
+      <AchievementBridge />
+
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -750,
+        ]}
+        index="05"
+        title="ACHIEVEMENT BRIDGE"
+        color="#f59e0b"
+        active={
+          experienceCompleted &&
+          !achievementsCompleted
+        }
+        completed={
+          achievementsCompleted
+        }
+      />
+
+      {/* Contact Tower preview marker */}
+
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -900,
+        ]}
+        index="06"
+        title="CONTACT TOWER"
+        color="#22d3ee"
+        active={
+          achievementsCompleted
+        }
+        completed={false}
       />
 
       {/* Player */}
