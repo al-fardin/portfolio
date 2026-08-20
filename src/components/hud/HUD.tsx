@@ -61,6 +61,12 @@ export default function HUD() {
         state.projectsCompleted
     );
 
+  const experienceCompleted =
+    useGameStore(
+      (state) =>
+        state.experienceCompleted
+    );
+
   if (
     sceneMode !==
     "ride"
@@ -106,16 +112,30 @@ export default function HUD() {
   }
 
   if (
-    projectsCompleted
+    projectsCompleted &&
+    !experienceCompleted
   ) {
     destination =
       "EXPERIENCE HIGHWAY";
 
     objective =
-      "Continue toward Experience Highway";
+      "Follow Experience Highway";
 
     number =
       "04";
+  }
+
+  if (
+    experienceCompleted
+  ) {
+    destination =
+      "ACHIEVEMENT BRIDGE";
+
+    objective =
+      "Ride toward Achievement Bridge";
+
+    number =
+      "05";
   }
 
   return (
@@ -139,7 +159,14 @@ export default function HUD() {
 
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
-        <div className="text-3xl leading-none text-violet-400">
+        <div
+          className={`text-3xl leading-none ${
+            projectsCompleted &&
+            !experienceCompleted
+              ? "text-orange-300"
+              : "text-violet-400"
+          }`}
+        >
           ↑
         </div>
 
@@ -155,7 +182,7 @@ export default function HUD() {
 
       </div>
 
-      {/* Progress */}
+      {/* Journey */}
 
       <div className="absolute right-7 top-7 text-right">
 

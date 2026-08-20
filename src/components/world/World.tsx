@@ -2,6 +2,8 @@
 
 import BikeController from "@/components/bike/BikeController";
 
+import ExperienceHighway from "@/components/locations/ExperienceHighway";
+
 import ProjectCity from "@/components/locations/ProjectCity";
 
 import SkillsGarage from "@/components/locations/SkillsGarage";
@@ -35,6 +37,12 @@ export default function World() {
         state.projectsCompleted
     );
 
+  const experienceCompleted =
+    useGameStore(
+      (state) =>
+        state.experienceCompleted
+    );
+
   return (
     <>
       {/* Sky */}
@@ -52,12 +60,12 @@ export default function World() {
         attach="fog"
         args={[
           "#0c1119",
-          60,
-          300,
+          65,
+          330,
         ]}
       />
 
-      {/* Lighting */}
+      {/* Main lighting */}
 
       <ambientLight
         intensity={0.65}
@@ -90,13 +98,13 @@ export default function World() {
         distance={80}
       />
 
-      {/* Base World */}
+      {/* Base environment */}
 
       <Road />
 
       <Buildings />
 
-      {/* ABOUT */}
+      {/* About */}
 
       <DestinationMarker
         position={[
@@ -115,7 +123,7 @@ export default function World() {
         }
       />
 
-      {/* SKILLS */}
+      {/* Skills */}
 
       <SkillsGarage />
 
@@ -137,7 +145,7 @@ export default function World() {
         }
       />
 
-      {/* PROJECT CITY */}
+      {/* Projects */}
 
       <ProjectCity />
 
@@ -156,6 +164,28 @@ export default function World() {
         }
         completed={
           projectsCompleted
+        }
+      />
+
+      {/* Experience */}
+
+      <ExperienceHighway />
+
+      <DestinationMarker
+        position={[
+          0,
+          0,
+          -575,
+        ]}
+        index="04"
+        title="EXPERIENCE HIGHWAY"
+        color="#fb923c"
+        active={
+          projectsCompleted &&
+          !experienceCompleted
+        }
+        completed={
+          experienceCompleted
         }
       />
 

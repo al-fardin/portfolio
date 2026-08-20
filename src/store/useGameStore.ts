@@ -8,7 +8,8 @@ export type SceneMode =
   | "ride"
   | "about"
   | "skills"
-  | "projects";
+  | "projects"
+  | "experience";
 
 type GameState = {
   speed: number;
@@ -27,7 +28,13 @@ type GameState = {
 
   projectsCompleted: boolean;
 
+  experienceCompleted: boolean;
+
   selectedProject: ProjectId;
+
+  activeExperienceMilestone:
+    | string
+    | null;
 
   updateRide: (
     speed: number,
@@ -48,9 +55,20 @@ type GameState = {
 
   continueFromProjects: () => void;
 
+  enterExperience: () => void;
+
+  continueFromExperience: () => void;
+
   selectProject: (
     project: ProjectId
   ) => void;
+
+  showExperienceMilestone: (
+    id: string
+  ) => void;
+
+  clearExperienceMilestone:
+    () => void;
 };
 
 export const useGameStore =
@@ -71,7 +89,12 @@ export const useGameStore =
 
     projectsCompleted: false,
 
+    experienceCompleted: false,
+
     selectedProject: "edunexus",
+
+    activeExperienceMilestone:
+      null,
 
     updateRide: (
       speed,
@@ -137,10 +160,43 @@ export const useGameStore =
         journeyProgress: 55,
       }),
 
+    enterExperience: () =>
+      set({
+        speed: 0,
+        sceneMode: "experience",
+        destinationReached: true,
+        journeyProgress: 72,
+        activeExperienceMilestone:
+          null,
+      }),
+
+    continueFromExperience: () =>
+      set({
+        speed: 0,
+        sceneMode: "ride",
+        experienceCompleted: true,
+        destinationReached: false,
+        journeyProgress: 72,
+      }),
+
     selectProject: (
       selectedProject
     ) =>
       set({
         selectedProject,
       }),
+
+    showExperienceMilestone: (
+      activeExperienceMilestone
+    ) =>
+      set({
+        activeExperienceMilestone,
+      }),
+
+    clearExperienceMilestone:
+      () =>
+        set({
+          activeExperienceMilestone:
+            null,
+        }),
   }));

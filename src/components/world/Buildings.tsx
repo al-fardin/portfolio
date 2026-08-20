@@ -9,13 +9,15 @@ export default function Buildings() {
       {buildings.map(
         (_, index) => {
           /*
-            Project City area
-            intentionally empty.
+            Project City থেকে
+            সামনে আর normal city
+            buildings থাকবে না.
+
+            এরপর open highway.
           */
 
           if (
-            index >= 21 &&
-            index <= 25
+            index >= 21
           ) {
             return null;
           }
@@ -30,12 +32,15 @@ export default function Buildings() {
 
           const rightHeight =
             7 +
-            ((index + 2) % 5) *
+            ((index + 2) %
+              5) *
               2;
 
           return (
-            <group key={index}>
-              {/* LEFT */}
+            <group
+              key={index}
+            >
+              {/* Left */}
               <mesh
                 position={[
                   -11.5 -
@@ -73,7 +78,7 @@ export default function Buildings() {
                 />
               </mesh>
 
-              {/* RIGHT */}
+              {/* Right */}
               <mesh
                 position={[
                   11.5 +

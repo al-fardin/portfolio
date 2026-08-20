@@ -15,6 +15,10 @@ import * as THREE from "three";
 import Bike from "./Bike";
 
 import {
+  experienceMilestones,
+} from "@/data/experience";
+
+import {
   useGameStore,
 } from "@/store/useGameStore";
 
@@ -39,7 +43,13 @@ const PROJECT_STOP_Z =
   -412;
 
 const EXPERIENCE_TARGET_Z =
-  -570;
+  -575;
+
+const EXPERIENCE_STOP_Z =
+  -568;
+
+const ACHIEVEMENT_TARGET_Z =
+  -735;
 
 export default function BikeController() {
   const bikeRef =
@@ -62,6 +72,13 @@ export default function BikeController() {
         1,
         -10
       )
+    );
+
+  const discoveredMilestones =
+    useRef<
+      Set<string>
+    >(
+      new Set()
     );
 
   const keys =
@@ -193,9 +210,9 @@ export default function BikeController() {
         bikeRef.current;
 
       /*
-        ==========================
-        CINEMATIC CAMERA
-        ==========================
+        =====================
+        CINEMATIC MODES
+        =====================
       */
 
       if (
@@ -225,10 +242,7 @@ export default function BikeController() {
           new THREE.Vector3(
             bike.position.x +
               8,
-
-            bike.position.y +
-              3.5,
-
+            4,
             bike.position.z +
               7
           );
@@ -236,14 +250,13 @@ export default function BikeController() {
         let cameraLook =
           new THREE.Vector3(
             bike.position.x,
-            bike.position.y +
-              1.2,
+            1.3,
             bike.position.z -
               7
           );
 
         /*
-          ABOUT
+          About
         */
 
         if (
@@ -269,7 +282,7 @@ export default function BikeController() {
         }
 
         /*
-          SKILLS
+          Skills
         */
 
         if (
@@ -294,9 +307,7 @@ export default function BikeController() {
         }
 
         /*
-          PROJECT CITY
-
-          Wide cinematic angle.
+          Projects
         */
 
         if (
@@ -307,9 +318,7 @@ export default function BikeController() {
             new THREE.Vector3(
               bike.position.x -
                 10,
-
               8,
-
               bike.position.z +
                 13
             );
@@ -322,7 +331,32 @@ export default function BikeController() {
             );
         }
 
-        const cinematicSmooth =
+        /*
+          Experience
+        */
+
+        if (
+          game.sceneMode ===
+          "experience"
+        ) {
+          cameraPosition =
+            new THREE.Vector3(
+              bike.position.x +
+                9,
+              6.5,
+              bike.position.z +
+                12
+            );
+
+          cameraLook =
+            new THREE.Vector3(
+              -4,
+              2.5,
+              -582
+            );
+        }
+
+        const smooth =
           1 -
           Math.exp(
             -2.1 *
@@ -331,21 +365,17 @@ export default function BikeController() {
 
         camera.position.lerp(
           cameraPosition,
-          cinematicSmooth
+          smooth
         );
 
         cameraLookTarget.current.lerp(
           cameraLook,
-          cinematicSmooth
+          smooth
         );
 
         camera.lookAt(
           cameraLookTarget.current
         );
-
-        /*
-          Straighten bike
-        */
 
         visualRef.current.rotation.x =
           THREE.MathUtils.lerp(
@@ -372,9 +402,9 @@ export default function BikeController() {
       }
 
       /*
-        ==========================
+        =====================
         RIDING
-        ==========================
+        =====================
       */
 
       const maxForwardSpeed =
@@ -406,8 +436,7 @@ export default function BikeController() {
           delta;
       } else {
         if (
-          speed.current >
-          0
+          speed.current > 0
         ) {
           speed.current -=
             friction *
@@ -423,8 +452,7 @@ export default function BikeController() {
         }
 
         if (
-          speed.current <
-          0
+          speed.current < 0
         ) {
           speed.current +=
             friction *
@@ -448,13 +476,13 @@ export default function BikeController() {
         );
 
       /*
-        ==========================
+        =====================
         CURRENT DESTINATION
-        ==========================
+        =====================
       */
 
       let targetZ =
-        EXPERIENCE_TARGET_Z;
+        ACHIEVEMENT_TARGET_Z;
 
       let stopZ:
         | number
@@ -465,8 +493,9 @@ export default function BikeController() {
         | "about"
         | "skills"
         | "projects"
-        | "experience" =
-        "experience";
+        | "experience"
+        | "achievement" =
+        "achievement";
 
       if (
         !game.aboutCompleted
@@ -501,6 +530,50 @@ export default function BikeController() {
 
         destination =
           "projects";
+      } else if (
+        !game.experienceCompleted
+      ) {
+        targetZ =
+          EXPERIENCE_TARGET_Z;
+
+        stopZ =
+          EXPERIENCE_STOP_Z;
+
+        destination =
+          "experience";
+      }
+
+      /*
+        EXPERIENCE MILESTONES
+      */
+
+      if (
+        game.projectsCompleted &&
+        !game.experienceCompleted
+      ) {
+        experienceMilestones.forEach(
+          (
+            milestone
+          ) => {
+            if (
+              bike.position.z <=
+                milestone.z &&
+              !discoveredMilestones.current.has(
+                milestone.id
+              )
+            ) {
+              discoveredMilestones.current.add(
+                milestone.id
+              );
+
+              useGameStore
+                .getState()
+                .showExperienceMilestone(
+                  milestone.id
+                );
+            }
+          }
+        );
       }
 
       /*
@@ -572,6 +645,17 @@ export default function BikeController() {
 
             return;
           }
+
+          if (
+            destination ===
+            "experience"
+          ) {
+            useGameStore
+              .getState()
+              .enterExperience();
+
+            return;
+          }
         }
       }
 
@@ -584,9 +668,7 @@ export default function BikeController() {
         delta;
 
       /*
-        ==========================
-        STEERING
-        ==========================
+        Steering
       */
 
       let steering = 0;
@@ -636,7 +718,7 @@ export default function BikeController() {
         );
 
       /*
-        Bike animation
+        Bike visual movement
       */
 
       const targetYaw =
@@ -689,19 +771,17 @@ export default function BikeController() {
         );
 
       /*
-        ==========================
+        =====================
         CHASE CAMERA
-        ==========================
+        =====================
       */
 
       const desiredCamera =
         new THREE.Vector3(
           bike.position.x *
             0.88,
-
           bike.position.y +
             4.6,
-
           bike.position.z +
             9.5
         );
@@ -722,10 +802,8 @@ export default function BikeController() {
         new THREE.Vector3(
           bike.position.x *
             0.75,
-
           bike.position.y +
             1.2,
-
           bike.position.z -
             11
         );
@@ -740,9 +818,9 @@ export default function BikeController() {
       );
 
       /*
-        ==========================
+        =====================
         HUD
-        ==========================
+        =====================
       */
 
       const displaySpeed =
@@ -765,10 +843,11 @@ export default function BikeController() {
             10
         );
 
-      let progress = 55;
+      let progress = 72;
 
       /*
-        ABOUT 0 → 16
+        ABOUT
+        0 -> 16
       */
 
       if (
@@ -795,7 +874,8 @@ export default function BikeController() {
       }
 
       /*
-        SKILLS 16 → 33
+        SKILLS
+        16 -> 33
       */
 
       else if (
@@ -823,7 +903,8 @@ export default function BikeController() {
       }
 
       /*
-        PROJECTS 33 → 55
+        PROJECTS
+        33 -> 55
       */
 
       else if (
@@ -847,6 +928,35 @@ export default function BikeController() {
               0,
               1
             ) * 22
+          );
+      }
+
+      /*
+        EXPERIENCE
+        55 -> 72
+      */
+
+      else if (
+        !game.experienceCompleted
+      ) {
+        const total =
+          (
+            PROJECT_STOP_Z -
+            EXPERIENCE_TARGET_Z
+          ) * 10;
+
+        progress =
+          55 +
+          Math.round(
+            THREE.MathUtils.clamp(
+              (
+                total -
+                distanceMeters
+              ) /
+                total,
+              0,
+              1
+            ) * 17
           );
       }
 
