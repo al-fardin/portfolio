@@ -1,26 +1,66 @@
+import BikeController from "@/components/bike/BikeController";
+
+import Buildings from "./Buildings";
+import DestinationMarker from "./DestinationMarker";
+import Road from "./Road";
+
 export default function World() {
   return (
     <>
-      <ambientLight intensity={0.6} />
-
-      <directionalLight
-        position={[5, 10, 5]}
-        intensity={2}
-        castShadow
+      {/* Sky */}
+      <color
+        attach="background"
+        args={["#10151c"]}
       />
 
-      <mesh position={[0, 1, 0]} castShadow>
-        <boxGeometry args={[2, 2, 2]} />
-        <meshStandardMaterial color="#7c3aed" />
-      </mesh>
+      {/* Distance fog */}
+      <fog
+        attach="fog"
+        args={[
+          "#10151c",
+          55,
+          260,
+        ]}
+      />
 
-      <mesh
-        rotation={[-Math.PI / 2, 0, 0]}
-        receiveShadow
-      >
-        <planeGeometry args={[40, 40]} />
-        <meshStandardMaterial color="#111111" />
-      </mesh>
+      {/* Global ambient light */}
+      <ambientLight intensity={0.7} />
+
+      {/* Sun */}
+      <directionalLight
+        position={[15, 25, 10]}
+        intensity={2.4}
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+      />
+
+      {/* Purple atmosphere */}
+      <pointLight
+        position={[0, 7, -75]}
+        color="#7c3aed"
+        intensity={35}
+        distance={80}
+      />
+
+      {/* Cyan atmosphere near destination */}
+      <pointLight
+        position={[0, 8, -120]}
+        color="#22d3ee"
+        intensity={18}
+        distance={40}
+      />
+
+      {/* Environment */}
+      <Road />
+
+      <Buildings />
+
+      {/* First portfolio destination */}
+      <DestinationMarker />
+
+      {/* Player */}
+      <BikeController />
     </>
   );
 }
