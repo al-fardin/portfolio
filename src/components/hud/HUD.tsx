@@ -1,37 +1,71 @@
 "use client";
 
-import { useGameStore } from "@/store/useGameStore";
+import {
+  useGameStore,
+} from "@/store/useGameStore";
 
-function formatDistance(distance: number) {
-  if (distance >= 1000) {
-    return `${(distance / 1000).toFixed(1)} KM`;
+function formatDistance(
+  distance: number
+) {
+  if (
+    distance >= 1000
+  ) {
+    return `${(
+      distance / 1000
+    ).toFixed(1)} KM`;
   }
 
   return `${distance} M`;
 }
 
 export default function HUD() {
-  const speed = useGameStore(
-    (state) => state.speed
-  );
+  const speed =
+    useGameStore(
+      (state) =>
+        state.speed
+    );
 
-  const distance = useGameStore(
-    (state) => state.distance
-  );
+  const distance =
+    useGameStore(
+      (state) =>
+        state.distance
+    );
 
-  const progress = useGameStore(
-    (state) => state.journeyProgress
-  );
+  const progress =
+    useGameStore(
+      (state) =>
+        state.journeyProgress
+    );
 
-  const reached = useGameStore(
-    (state) => state.destinationReached
-  );
+  const sceneMode =
+    useGameStore(
+      (state) =>
+        state.sceneMode
+    );
+
+  const aboutCompleted =
+    useGameStore(
+      (state) =>
+        state.aboutCompleted
+    );
+
+  /*
+    Hide gameplay HUD
+    during cinematic
+  */
+
+  if (
+    sceneMode !== "ride"
+  ) {
+    return null;
+  }
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20 select-none text-white">
 
-      {/* TOP LEFT */}
+      {/* Top left */}
       <div className="absolute left-7 top-7">
+
         <p className="text-[10px] tracking-[0.45em] text-white/40">
           NEXUS RIDE
         </p>
@@ -39,12 +73,13 @@ export default function HUD() {
         <p className="mt-1 text-sm font-medium tracking-wider">
           JOURNEY / 01
         </p>
+
       </div>
 
-      {/* NAVIGATION */}
+      {/* Navigation */}
       <div className="absolute left-1/2 top-7 -translate-x-1/2 text-center">
 
-        {!reached ? (
+        {!aboutCompleted ? (
           <>
             <div className="text-3xl leading-none text-violet-400">
               ↑
@@ -55,24 +90,32 @@ export default function HUD() {
             </p>
 
             <p className="mt-1 font-mono text-xs text-white/55">
-              {formatDistance(distance)}
+              {formatDistance(
+                distance
+              )}
             </p>
           </>
         ) : (
-          <div className="rounded-sm border border-cyan-400/40 bg-black/50 px-6 py-3 backdrop-blur-md">
-            <p className="text-[10px] tracking-[0.3em] text-cyan-300">
-              DESTINATION REACHED
+          <>
+            <div className="text-3xl leading-none text-cyan-300">
+              ↑
+            </div>
+
+            <p className="mt-2 text-xs font-semibold tracking-[0.25em]">
+              SKILLS GARAGE
             </p>
 
-            <p className="mt-1 text-sm font-semibold tracking-wider">
-              ABOUT VIEWPOINT
+            <p className="mt-1 font-mono text-[10px] tracking-wider text-white/40">
+              ROUTE UPDATING
             </p>
-          </div>
+          </>
         )}
+
       </div>
 
-      {/* JOURNEY PROGRESS */}
+      {/* Journey progress */}
       <div className="absolute right-7 top-7 text-right">
+
         <p className="text-[10px] tracking-[0.3em] text-white/40">
           JOURNEY
         </p>
@@ -80,26 +123,33 @@ export default function HUD() {
         <p className="mt-1 text-2xl font-light">
           {progress
             .toString()
-            .padStart(2, "0")}
+            .padStart(
+              2,
+              "0"
+            )}
           %
         </p>
+
       </div>
 
-      {/* OBJECTIVE */}
+      {/* Objective */}
       <div className="absolute bottom-7 left-7">
+
         <p className="text-[9px] tracking-[0.35em] text-white/35">
           OBJECTIVE
         </p>
 
         <p className="mt-2 text-sm">
-          {reached
-            ? "Explore About Viewpoint"
-            : "Reach About Viewpoint"}
+          {!aboutCompleted
+            ? "Reach About Viewpoint"
+            : "Continue toward Skills Garage"}
         </p>
+
       </div>
 
-      {/* CONTROLS */}
+      {/* Controls */}
       <div className="absolute bottom-7 left-1/2 -translate-x-1/2 text-center">
+
         <p className="font-mono text-[10px] tracking-[0.18em] text-white/35">
           W ACCELERATE
           &nbsp;&nbsp;•&nbsp;&nbsp;
@@ -107,14 +157,19 @@ export default function HUD() {
           &nbsp;&nbsp;•&nbsp;&nbsp;
           S BRAKE
         </p>
+
       </div>
 
-      {/* SPEED */}
+      {/* Speedometer */}
       <div className="absolute bottom-7 right-7 text-right">
+
         <p className="font-mono text-5xl font-light leading-none">
           {speed
             .toString()
-            .padStart(3, "0")}
+            .padStart(
+              3,
+              "0"
+            )}
         </p>
 
         <p className="mt-1 text-[10px] tracking-[0.35em] text-white/40">
@@ -124,6 +179,7 @@ export default function HUD() {
         <p className="mt-2 font-mono text-[9px] text-violet-300/70">
           AUTO
         </p>
+
       </div>
 
     </div>

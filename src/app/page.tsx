@@ -1,5 +1,8 @@
 import GameCanvas from "@/components/game/GameCanvas";
+
 import HUD from "@/components/hud/HUD";
+
+import AboutOverlay from "@/components/portfolio/AboutOverlay";
 
 export default function Home() {
   return (
@@ -15,9 +18,14 @@ export default function Home() {
         background: "#10151c",
       }}
     >
+      {/* 3D Game World */}
       <GameCanvas />
 
+      {/* Gameplay Interface */}
       <HUD />
+
+      {/* Portfolio Cinematic */}
+      <AboutOverlay />
     </main>
   );
 }
