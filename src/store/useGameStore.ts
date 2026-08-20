@@ -5,6 +5,7 @@ import type {
 } from "@/data/projects";
 
 export type SceneMode =
+  | "startup"
   | "ride"
   | "about"
   | "skills"
@@ -47,6 +48,8 @@ type GameState = {
     | string
     | null;
 
+  startJourney: () => void;
+
   updateRide: (
     speed: number,
     distance: number,
@@ -86,15 +89,13 @@ type GameState = {
     id: string
   ) => void;
 
-  clearExperienceMilestone:
-    () => void;
+  clearExperienceMilestone: () => void;
 
   showAchievementMilestone: (
     id: string
   ) => void;
 
-  clearAchievementMilestone:
-    () => void;
+  clearAchievementMilestone: () => void;
 };
 
 export const useGameStore =
@@ -107,7 +108,7 @@ export const useGameStore =
 
     destinationReached: false,
 
-    sceneMode: "ride",
+    sceneMode: "startup",
 
     aboutCompleted: false,
 
@@ -128,6 +129,15 @@ export const useGameStore =
 
     activeAchievementMilestone:
       null,
+
+    startJourney: () =>
+      set({
+        speed: 0,
+        distance: 1240,
+        journeyProgress: 0,
+        destinationReached: false,
+        sceneMode: "ride",
+      }),
 
     updateRide: (
       speed,
@@ -262,12 +272,11 @@ export const useGameStore =
         activeExperienceMilestone,
       }),
 
-    clearExperienceMilestone:
-      () =>
-        set({
-          activeExperienceMilestone:
-            null,
-        }),
+    clearExperienceMilestone: () =>
+      set({
+        activeExperienceMilestone:
+          null,
+      }),
 
     showAchievementMilestone: (
       activeAchievementMilestone
@@ -276,10 +285,9 @@ export const useGameStore =
         activeAchievementMilestone,
       }),
 
-    clearAchievementMilestone:
-      () =>
-        set({
-          activeAchievementMilestone:
-            null,
-        }),
+    clearAchievementMilestone: () =>
+      set({
+        activeAchievementMilestone:
+          null,
+      }),
   }));

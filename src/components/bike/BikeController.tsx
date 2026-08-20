@@ -48,10 +48,14 @@ const CONTACT_STOP_Z = -890;
 
 export default function BikeController() {
   const bikeRef =
-    useRef<THREE.Group>(null);
+    useRef<THREE.Group>(
+      null
+    );
 
   const visualRef =
-    useRef<THREE.Group>(null);
+    useRef<THREE.Group>(
+      null
+    );
 
   const speed =
     useRef(0);
@@ -92,7 +96,7 @@ export default function BikeController() {
 
   /*
     ==========================
-    KEYBOARD INPUT
+    INPUT
     ==========================
   */
 
@@ -224,7 +228,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        CINEMATIC MODES
+        NON-RIDING / CINEMATIC
         ==========================
       */
 
@@ -254,11 +258,6 @@ export default function BikeController() {
         keys.current.right =
           false;
 
-        /*
-          Cinematic mode returns
-          camera FOV to normal.
-        */
-
         if (
           perspectiveCamera.isPerspectiveCamera
         ) {
@@ -271,11 +270,6 @@ export default function BikeController() {
 
           perspectiveCamera.updateProjectionMatrix();
         }
-
-        /*
-          Remove suspension
-          vibration when stopped.
-        */
 
         visual.position.y =
           THREE.MathUtils.lerp(
@@ -299,6 +293,57 @@ export default function BikeController() {
           );
 
         /*
+          =====================
+          STARTUP CAMERA
+          =====================
+
+          Slow orbit around bike.
+        */
+
+        if (
+          game.sceneMode ===
+          "startup"
+        ) {
+          const time =
+            state.clock
+              .elapsedTime;
+
+          const orbit =
+            time * 0.18;
+
+          cameraPosition =
+            new THREE.Vector3(
+              bike.position.x +
+                Math.sin(
+                  orbit
+                ) *
+                  7.5,
+
+              3.2 +
+                Math.sin(
+                  time *
+                    0.35
+                ) *
+                  0.35,
+
+              bike.position.z +
+                7.5 +
+                Math.cos(
+                  orbit
+                ) *
+                  2.2
+            );
+
+          cameraLook =
+            new THREE.Vector3(
+              bike.position.x,
+              1.25,
+              bike.position.z -
+                0.2
+            );
+        }
+
+        /*
           ABOUT
         */
 
@@ -308,16 +353,19 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x + 8,
+              bike.position.x +
+                8,
               3.5,
-              bike.position.z + 7
+              bike.position.z +
+                7
             );
 
           cameraLook =
             new THREE.Vector3(
               bike.position.x,
               1.4,
-              bike.position.z - 8
+              bike.position.z -
+                8
             );
         }
 
@@ -331,9 +379,11 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x - 7,
+              bike.position.x -
+                7,
               4.8,
-              bike.position.z + 7
+              bike.position.z +
+                7
             );
 
           cameraLook =
@@ -354,9 +404,11 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x - 10,
+              bike.position.x -
+                10,
               8,
-              bike.position.z + 13
+              bike.position.z +
+                13
             );
 
           cameraLook =
@@ -377,9 +429,11 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x + 9,
+              bike.position.x +
+                9,
               6.5,
-              bike.position.z + 12
+              bike.position.z +
+                12
             );
 
           cameraLook =
@@ -400,9 +454,11 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x - 10,
+              bike.position.x -
+                10,
               7.5,
-              bike.position.z + 15
+              bike.position.z +
+                15
             );
 
           cameraLook =
@@ -423,9 +479,11 @@ export default function BikeController() {
         ) {
           cameraPosition =
             new THREE.Vector3(
-              bike.position.x + 12,
+              bike.position.x +
+                12,
               9,
-              bike.position.z + 18
+              bike.position.z +
+                18
             );
 
           cameraLook =
@@ -436,10 +494,16 @@ export default function BikeController() {
             );
         }
 
+        const cinematicSpeed =
+          game.sceneMode ===
+          "startup"
+            ? 1.3
+            : 2.1;
+
         const smooth =
           1 -
           Math.exp(
-            -2.1 *
+            -cinematicSpeed *
               delta
           );
 
@@ -483,7 +547,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        RIDING PHYSICS
+        RIDING
         ==========================
       */
 
@@ -554,15 +618,7 @@ export default function BikeController() {
         );
 
       /*
-        ==========================
         ACCELERATION FORCE
-        ==========================
-
-        Positive:
-        bike accelerating.
-
-        Negative:
-        bike braking / slowing.
       */
 
       const speedDifference =
@@ -585,7 +641,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        CURRENT DESTINATION
+        DESTINATION
         ==========================
       */
 
@@ -759,10 +815,6 @@ export default function BikeController() {
             );
         }
 
-        /*
-          DESTINATION REACHED
-        */
-
         if (
           bike.position.z <=
           stopZ
@@ -909,7 +961,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        BIKE LEAN
+        BIKE ANIMATION
         ==========================
       */
 
@@ -937,14 +989,6 @@ export default function BikeController() {
           0.1
         );
 
-      /*
-        Acceleration:
-        front slightly rises.
-
-        Braking:
-        front slightly dips.
-      */
-
       const targetPitch =
         THREE.MathUtils.clamp(
           -accelerationForce *
@@ -961,13 +1005,12 @@ export default function BikeController() {
         );
 
       /*
-        ==========================
-        SUSPENSION / ROAD VIBRATION
-        ==========================
+        SUSPENSION
       */
 
       const time =
-        state.clock.elapsedTime;
+        state.clock
+          .elapsedTime;
 
       const roadBounce =
         Math.sin(
@@ -1002,7 +1045,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        DYNAMIC CAMERA FOV
+        FOV
         ==========================
       */
 
@@ -1027,31 +1070,16 @@ export default function BikeController() {
       }
 
       /*
-        ==========================
         CAMERA DISTANCE
-        ==========================
       */
 
       const speedCameraPull =
         speedRatio *
         3.2;
 
-      /*
-        Acceleration pulls
-        camera backwards.
-
-        Braking pushes camera
-        slightly forward.
-      */
-
       const accelerationCamera =
         accelerationForce *
         0.75;
-
-      /*
-        Camera slightly lags
-        opposite steering direction.
-      */
 
       const steeringLag =
         -steering *
@@ -1059,13 +1087,7 @@ export default function BikeController() {
         0.65;
 
       /*
-        ==========================
-        CINEMATIC CAMERA SHAKE
-        ==========================
-
-        Very small values.
-        Should feel alive,
-        not shaky.
+        CAMERA SHAKE
       */
 
       const shakeStrength =
@@ -1093,7 +1115,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        CHASE CAMERA POSITION
+        CHASE CAMERA
         ==========================
       */
 
@@ -1116,13 +1138,6 @@ export default function BikeController() {
             accelerationCamera
         );
 
-      /*
-        At high speed camera
-        reacts slightly slower.
-
-        This creates weight.
-      */
-
       const cameraFollowSpeed =
         THREE.MathUtils.lerp(
           6,
@@ -1143,9 +1158,7 @@ export default function BikeController() {
       );
 
       /*
-        ==========================
-        CAMERA LOOK TARGET
-        ==========================
+        LOOK AHEAD
       */
 
       const lookAhead =
@@ -1180,7 +1193,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        HUD
+        HUD DATA
         ==========================
       */
 
@@ -1210,7 +1223,6 @@ export default function BikeController() {
 
       /*
         ABOUT
-        0 → 16
       */
 
       if (
@@ -1240,7 +1252,6 @@ export default function BikeController() {
 
       /*
         SKILLS
-        16 → 33
       */
 
       else if (
@@ -1271,7 +1282,6 @@ export default function BikeController() {
 
       /*
         PROJECTS
-        33 → 55
       */
 
       else if (
@@ -1302,7 +1312,6 @@ export default function BikeController() {
 
       /*
         EXPERIENCE
-        55 → 72
       */
 
       else if (
@@ -1333,7 +1342,6 @@ export default function BikeController() {
 
       /*
         ACHIEVEMENTS
-        72 → 88
       */
 
       else if (
@@ -1364,7 +1372,6 @@ export default function BikeController() {
 
       /*
         CONTACT
-        88 → 100
       */
 
       else {

@@ -20,6 +20,8 @@ import ProjectsOverlay from "@/components/portfolio/ProjectsOverlay";
 
 import SkillsOverlay from "@/components/portfolio/SkillsOverlay";
 
+import StartupOverlay from "@/components/portfolio/StartupOverlay";
+
 export default function Home() {
   return (
     <main
@@ -33,17 +35,22 @@ export default function Home() {
         margin: 0,
         padding: 0,
 
-        overflow: "hidden",
+        overflow:
+          "hidden",
 
         background:
-          "#050812",
+          "#030509",
       }}
     >
+      {/* ==================== */}
       {/* 3D WORLD */}
+      {/* ==================== */}
 
       <GameCanvas />
 
-      {/* HUD */}
+      {/* ==================== */}
+      {/* GAME HUD */}
+      {/* ==================== */}
 
       <HUD />
 
@@ -51,7 +58,15 @@ export default function Home() {
 
       <AchievementToast />
 
-      {/* CINEMATICS */}
+      {/* ==================== */}
+      {/* STARTUP */}
+      {/* ==================== */}
+
+      <StartupOverlay />
+
+      {/* ==================== */}
+      {/* PORTFOLIO CINEMATICS */}
+      {/* ==================== */}
 
       <AboutOverlay />
 
