@@ -46,22 +46,31 @@ const ACHIEVEMENT_STOP_Z = -742;
 const CONTACT_TARGET_Z = -900;
 const CONTACT_STOP_Z = -890;
 
+type Destination =
+  | "about"
+  | "skills"
+  | "projects"
+  | "experience"
+  | "achievements"
+  | "contact";
+
 export default function BikeController() {
   const bikeRef =
-    useRef<THREE.Group>(
-      null
-    );
+    useRef<THREE.Group>(null);
 
   const visualRef =
-    useRef<THREE.Group>(
-      null
-    );
+    useRef<THREE.Group>(null);
 
   const speed =
     useRef(0);
 
-  const previousSpeed =
+  const scrollPower =
     useRef(0);
+
+  const touchY =
+    useRef<number | null>(
+      null
+    );
 
   const cameraLookTarget =
     useRef(
@@ -82,122 +91,227 @@ export default function BikeController() {
       new Set()
     );
 
-  const keys =
-    useRef({
-      forward: false,
-      backward: false,
-      left: false,
-      right: false,
-    });
-
-  const {
-    camera,
-  } = useThree();
+  const { camera } =
+    useThree();
 
   /*
     ==========================
-    INPUT
+    SCROLL / TOUCH INPUT
     ==========================
   */
 
   useEffect(() => {
-    const keyDown = (
-      event: KeyboardEvent
+    const addTravelPower = (
+      amount: number
     ) => {
-      const key =
-        event.key.toLowerCase();
+      const game =
+        useGameStore.getState();
 
       if (
-        key === "w" ||
-        key === "arrowup"
+        game.sceneMode !==
+        "ride"
       ) {
-        keys.current.forward =
-          true;
+        return;
+      }
+
+      scrollPower.current =
+        THREE.MathUtils.clamp(
+          scrollPower.current +
+            amount,
+          0,
+          1
+        );
+    };
+
+    const reduceTravelPower = (
+      amount: number
+    ) => {
+      scrollPower.current =
+        THREE.MathUtils.clamp(
+          scrollPower.current -
+            amount,
+          0,
+          1
+        );
+    };
+
+    const handleWheel = (
+      event: WheelEvent
+    ) => {
+      if (
+        event.deltaY > 0
+      ) {
+        const strength =
+          THREE.MathUtils.clamp(
+            Math.abs(
+              event.deltaY
+            ) / 220,
+            0.18,
+            0.5
+          );
+
+        addTravelPower(
+          strength
+        );
       }
 
       if (
-        key === "s" ||
-        key === "arrowdown"
+        event.deltaY < 0
       ) {
-        keys.current.backward =
-          true;
-      }
-
-      if (
-        key === "a" ||
-        key === "arrowleft"
-      ) {
-        keys.current.left =
-          true;
-      }
-
-      if (
-        key === "d" ||
-        key === "arrowright"
-      ) {
-        keys.current.right =
-          true;
+        reduceTravelPower(
+          0.2
+        );
       }
     };
 
-    const keyUp = (
+    const handleKeyDown = (
       event: KeyboardEvent
     ) => {
-      const key =
-        event.key.toLowerCase();
-
       if (
-        key === "w" ||
-        key === "arrowup"
+        event.key ===
+          "ArrowDown" ||
+        event.key ===
+          "PageDown" ||
+        event.key === " "
       ) {
-        keys.current.forward =
-          false;
+        addTravelPower(
+          0.35
+        );
       }
 
       if (
-        key === "s" ||
-        key === "arrowdown"
+        event.key ===
+          "ArrowUp" ||
+        event.key ===
+          "PageUp"
       ) {
-        keys.current.backward =
-          false;
-      }
-
-      if (
-        key === "a" ||
-        key === "arrowleft"
-      ) {
-        keys.current.left =
-          false;
-      }
-
-      if (
-        key === "d" ||
-        key === "arrowright"
-      ) {
-        keys.current.right =
-          false;
+        reduceTravelPower(
+          0.25
+        );
       }
     };
+
+    const handleTouchStart = (
+      event: TouchEvent
+    ) => {
+      touchY.current =
+        event.touches[0]
+          ?.clientY ?? null;
+    };
+
+    const handleTouchMove = (
+      event: TouchEvent
+    ) => {
+      if (
+        touchY.current ===
+        null
+      ) {
+        return;
+      }
+
+      const currentY =
+        event.touches[0]
+          ?.clientY;
+
+      if (
+        currentY ===
+        undefined
+      ) {
+        return;
+      }
+
+      const movement =
+        touchY.current -
+        currentY;
+
+      if (
+        movement > 4
+      ) {
+        addTravelPower(
+          THREE.MathUtils.clamp(
+            movement / 120,
+            0.1,
+            0.32
+          )
+        );
+      }
+
+      if (
+        movement < -4
+      ) {
+        reduceTravelPower(
+          0.08
+        );
+      }
+
+      touchY.current =
+        currentY;
+    };
+
+    const handleTouchEnd =
+      () => {
+        touchY.current =
+          null;
+      };
 
     window.addEventListener(
-      "keydown",
-      keyDown
+      "wheel",
+      handleWheel,
+      {
+        passive: true,
+      }
     );
 
     window.addEventListener(
-      "keyup",
-      keyUp
+      "keydown",
+      handleKeyDown
+    );
+
+    window.addEventListener(
+      "touchstart",
+      handleTouchStart,
+      {
+        passive: true,
+      }
+    );
+
+    window.addEventListener(
+      "touchmove",
+      handleTouchMove,
+      {
+        passive: true,
+      }
+    );
+
+    window.addEventListener(
+      "touchend",
+      handleTouchEnd
     );
 
     return () => {
       window.removeEventListener(
-        "keydown",
-        keyDown
+        "wheel",
+        handleWheel
       );
 
       window.removeEventListener(
-        "keyup",
-        keyUp
+        "keydown",
+        handleKeyDown
+      );
+
+      window.removeEventListener(
+        "touchstart",
+        handleTouchStart
+      );
+
+      window.removeEventListener(
+        "touchmove",
+        handleTouchMove
+      );
+
+      window.removeEventListener(
+        "touchend",
+        handleTouchEnd
       );
     };
   }, []);
@@ -228,7 +342,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        NON-RIDING / CINEMATIC
+        CINEMATIC MODES
         ==========================
       */
 
@@ -236,40 +350,15 @@ export default function BikeController() {
         game.sceneMode !==
         "ride"
       ) {
+        scrollPower.current =
+          0;
+
         speed.current =
           THREE.MathUtils.lerp(
             speed.current,
             0,
-            0.2
+            0.18
           );
-
-        previousSpeed.current =
-          speed.current;
-
-        keys.current.forward =
-          false;
-
-        keys.current.backward =
-          false;
-
-        keys.current.left =
-          false;
-
-        keys.current.right =
-          false;
-
-        if (
-          perspectiveCamera.isPerspectiveCamera
-        ) {
-          perspectiveCamera.fov =
-            THREE.MathUtils.lerp(
-              perspectiveCamera.fov,
-              55,
-              0.08
-            );
-
-          perspectiveCamera.updateProjectionMatrix();
-        }
 
         visual.position.y =
           THREE.MathUtils.lerp(
@@ -278,9 +367,22 @@ export default function BikeController() {
             0.1
           );
 
+        if (
+          perspectiveCamera.isPerspectiveCamera
+        ) {
+          perspectiveCamera.fov =
+            THREE.MathUtils.lerp(
+              perspectiveCamera.fov,
+              54,
+              0.07
+            );
+
+          perspectiveCamera.updateProjectionMatrix();
+        }
+
         let cameraPosition =
           new THREE.Vector3(
-            bike.position.x + 8,
+            bike.position.x + 7,
             4,
             bike.position.z + 8
           );
@@ -288,16 +390,12 @@ export default function BikeController() {
         let cameraLook =
           new THREE.Vector3(
             bike.position.x,
-            1.4,
-            bike.position.z - 7
+            1.3,
+            bike.position.z - 5
           );
 
         /*
-          =====================
-          STARTUP CAMERA
-          =====================
-
-          Slow orbit around bike.
+          STARTUP
         */
 
         if (
@@ -305,11 +403,10 @@ export default function BikeController() {
           "startup"
         ) {
           const time =
-            state.clock
-              .elapsedTime;
+            state.clock.elapsedTime;
 
           const orbit =
-            time * 0.18;
+            time * 0.12;
 
           cameraPosition =
             new THREE.Vector3(
@@ -317,29 +414,28 @@ export default function BikeController() {
                 Math.sin(
                   orbit
                 ) *
-                  7.5,
+                  6.5,
 
-              3.2 +
+              3.3 +
                 Math.sin(
                   time *
-                    0.35
+                    0.25
                 ) *
-                  0.35,
+                  0.22,
 
               bike.position.z +
-                7.5 +
+                7.3 +
                 Math.cos(
                   orbit
                 ) *
-                  2.2
+                  2
             );
 
           cameraLook =
             new THREE.Vector3(
               bike.position.x,
-              1.25,
-              bike.position.z -
-                0.2
+              1.2,
+              bike.position.z
             );
         }
 
@@ -354,16 +450,16 @@ export default function BikeController() {
           cameraPosition =
             new THREE.Vector3(
               bike.position.x +
-                8,
-              3.5,
+                7.5,
+              4.4,
               bike.position.z +
-                7
+                8
             );
 
           cameraLook =
             new THREE.Vector3(
               bike.position.x,
-              1.4,
+              1.7,
               bike.position.z -
                 8
             );
@@ -380,10 +476,10 @@ export default function BikeController() {
           cameraPosition =
             new THREE.Vector3(
               bike.position.x -
-                7,
-              4.8,
+                8,
+              5,
               bike.position.z +
-                7
+                8
             );
 
           cameraLook =
@@ -405,8 +501,8 @@ export default function BikeController() {
           cameraPosition =
             new THREE.Vector3(
               bike.position.x -
-                10,
-              8,
+                9,
+              7.5,
               bike.position.z +
                 13
             );
@@ -414,7 +510,7 @@ export default function BikeController() {
           cameraLook =
             new THREE.Vector3(
               24,
-              9,
+              8,
               -423
             );
         }
@@ -431,14 +527,14 @@ export default function BikeController() {
             new THREE.Vector3(
               bike.position.x +
                 9,
-              6.5,
+              6,
               bike.position.z +
                 12
             );
 
           cameraLook =
             new THREE.Vector3(
-              -4,
+              -3,
               2.5,
               -582
             );
@@ -456,9 +552,9 @@ export default function BikeController() {
             new THREE.Vector3(
               bike.position.x -
                 10,
-              7.5,
+              7,
               bike.position.z +
-                15
+                14
             );
 
           cameraLook =
@@ -497,8 +593,8 @@ export default function BikeController() {
         const cinematicSpeed =
           game.sceneMode ===
           "startup"
-            ? 1.3
-            : 2.1;
+            ? 1.15
+            : 2;
 
         const smooth =
           1 -
@@ -547,119 +643,18 @@ export default function BikeController() {
 
       /*
         ==========================
-        RIDING
-        ==========================
-      */
-
-      const maxForwardSpeed =
-        26;
-
-      const maxReverseSpeed =
-        -5;
-
-      const acceleration =
-        13;
-
-      const braking =
-        22;
-
-      const friction =
-        5;
-
-      if (
-        keys.current.forward
-      ) {
-        speed.current +=
-          acceleration *
-          delta;
-      } else if (
-        keys.current.backward
-      ) {
-        speed.current -=
-          braking *
-          delta;
-      } else {
-        if (
-          speed.current > 0
-        ) {
-          speed.current -=
-            friction *
-            delta;
-
-          if (
-            speed.current < 0
-          ) {
-            speed.current =
-              0;
-          }
-        }
-
-        if (
-          speed.current < 0
-        ) {
-          speed.current +=
-            friction *
-            delta;
-
-          if (
-            speed.current > 0
-          ) {
-            speed.current =
-              0;
-          }
-        }
-      }
-
-      speed.current =
-        THREE.MathUtils.clamp(
-          speed.current,
-          maxReverseSpeed,
-          maxForwardSpeed
-        );
-
-      /*
-        ACCELERATION FORCE
-      */
-
-      const speedDifference =
-        speed.current -
-        previousSpeed.current;
-
-      const accelerationForce =
-        delta > 0
-          ? THREE.MathUtils.clamp(
-              speedDifference /
-                delta /
-                acceleration,
-              -1,
-              1
-            )
-          : 0;
-
-      previousSpeed.current =
-        speed.current;
-
-      /*
-        ==========================
-        DESTINATION
+        CURRENT DESTINATION
         ==========================
       */
 
       let targetZ =
         CONTACT_TARGET_Z;
 
-      let stopZ:
-        | number
-        | null =
+      let stopZ =
         CONTACT_STOP_Z;
 
       let destination:
-        | "about"
-        | "skills"
-        | "projects"
-        | "experience"
-        | "achievements"
-        | "contact" =
+        Destination =
         "contact";
 
       if (
@@ -718,6 +713,196 @@ export default function BikeController() {
         destination =
           "achievements";
       }
+
+      /*
+        ==========================
+        DISTANCE TO STOP
+        ==========================
+      */
+
+      const distanceToStop =
+        bike.position.z -
+        stopZ;
+
+      /*
+        IMPORTANT FIX:
+
+        আগের version-এ speed
+        asymptotically 0 হয়ে যেত।
+
+        এখন destination-এর খুব
+        কাছে এলে আমরা সরাসরি
+        destination trigger করব।
+      */
+
+      if (
+        distanceToStop <=
+        0.75
+      ) {
+        bike.position.z =
+          stopZ;
+
+        speed.current = 0;
+
+        scrollPower.current =
+          0;
+
+        if (
+          destination ===
+          "about"
+        ) {
+          useGameStore
+            .getState()
+            .enterAbout();
+
+          return;
+        }
+
+        if (
+          destination ===
+          "skills"
+        ) {
+          useGameStore
+            .getState()
+            .enterSkills();
+
+          return;
+        }
+
+        if (
+          destination ===
+          "projects"
+        ) {
+          useGameStore
+            .getState()
+            .enterProjects();
+
+          return;
+        }
+
+        if (
+          destination ===
+          "experience"
+        ) {
+          useGameStore
+            .getState()
+            .enterExperience();
+
+          return;
+        }
+
+        if (
+          destination ===
+          "achievements"
+        ) {
+          useGameStore
+            .getState()
+            .enterAchievements();
+
+          return;
+        }
+
+        if (
+          destination ===
+          "contact"
+        ) {
+          useGameStore
+            .getState()
+            .enterContact();
+
+          return;
+        }
+      }
+
+      /*
+        ==========================
+        SCROLL DECAY
+        ==========================
+      */
+
+      scrollPower.current =
+        Math.max(
+          0,
+          scrollPower.current -
+            delta *
+              0.25
+        );
+
+      let targetSpeed =
+        scrollPower.current >
+        0.015
+          ? 4 +
+            scrollPower.current *
+              18
+          : 0;
+
+      /*
+        ==========================
+        SMART ARRIVAL
+        ==========================
+
+        30 units থেকে
+        cinematic slowdown.
+
+        কিন্তু minimum arrival
+        speed থাকবে যেন bike
+        আটকে না যায়।
+      */
+
+      if (
+        distanceToStop <
+          30 &&
+        distanceToStop >
+          0.75
+      ) {
+        const stopFactor =
+          THREE.MathUtils.clamp(
+            distanceToStop /
+              30,
+            0,
+            1
+          );
+
+        targetSpeed *=
+          0.25 +
+          stopFactor *
+            0.75;
+
+        /*
+          user scroll করেছে
+          এবং destination খুব কাছে,
+          তাহলে minimum crawl speed.
+        */
+
+        if (
+          scrollPower.current >
+            0.01
+        ) {
+          targetSpeed =
+            Math.max(
+              targetSpeed,
+              2.4
+            );
+        }
+      }
+
+      /*
+        Smooth acceleration.
+      */
+
+      const speedSmooth =
+        1 -
+        Math.exp(
+          -4 *
+            delta
+        );
+
+      speed.current =
+        THREE.MathUtils.lerp(
+          speed.current,
+          targetSpeed,
+          speedSmooth
+        );
 
       /*
         ==========================
@@ -787,118 +972,7 @@ export default function BikeController() {
 
       /*
         ==========================
-        AUTO SLOWDOWN
-        ==========================
-      */
-
-      if (
-        stopZ !== null
-      ) {
-        const distanceToStop =
-          bike.position.z -
-          stopZ;
-
-        if (
-          distanceToStop <
-            30 &&
-          distanceToStop >
-            0 &&
-          speed.current >
-            4
-        ) {
-          speed.current =
-            Math.max(
-              0,
-              speed.current -
-                18 *
-                  delta
-            );
-        }
-
-        if (
-          bike.position.z <=
-          stopZ
-        ) {
-          bike.position.z =
-            stopZ;
-
-          speed.current =
-            0;
-
-          previousSpeed.current =
-            0;
-
-          if (
-            destination ===
-            "about"
-          ) {
-            useGameStore
-              .getState()
-              .enterAbout();
-
-            return;
-          }
-
-          if (
-            destination ===
-            "skills"
-          ) {
-            useGameStore
-              .getState()
-              .enterSkills();
-
-            return;
-          }
-
-          if (
-            destination ===
-            "projects"
-          ) {
-            useGameStore
-              .getState()
-              .enterProjects();
-
-            return;
-          }
-
-          if (
-            destination ===
-            "experience"
-          ) {
-            useGameStore
-              .getState()
-              .enterExperience();
-
-            return;
-          }
-
-          if (
-            destination ===
-            "achievements"
-          ) {
-            useGameStore
-              .getState()
-              .enterAchievements();
-
-            return;
-          }
-
-          if (
-            destination ===
-            "contact"
-          ) {
-            useGameStore
-              .getState()
-              .enterContact();
-
-            return;
-          }
-        }
-      }
-
-      /*
-        ==========================
-        FORWARD MOVEMENT
+        MOVE
         ==========================
       */
 
@@ -907,145 +981,124 @@ export default function BikeController() {
         delta;
 
       /*
+        Prevent overshooting.
+      */
+
+      if (
+        bike.position.z <
+        stopZ
+      ) {
+        bike.position.z =
+          stopZ;
+      }
+
+      /*
         ==========================
-        STEERING
+        CURATED PATH
         ==========================
       */
 
-      let steering = 0;
+      const routeDistance =
+        -bike.position.z;
 
-      if (
-        keys.current.left
-      ) {
-        steering = -1;
-      }
+      const targetX =
+        Math.sin(
+          routeDistance *
+            0.014
+        ) *
+          0.55 +
+        Math.sin(
+          routeDistance *
+            0.004
+        ) *
+          0.25;
 
-      if (
-        keys.current.right
-      ) {
-        steering = 1;
-      }
+      const previousX =
+        bike.position.x;
+
+      const pathSmooth =
+        1 -
+        Math.exp(
+          -2.3 *
+            delta
+        );
+
+      bike.position.x =
+        THREE.MathUtils.lerp(
+          bike.position.x,
+          targetX,
+          pathSmooth
+        );
+
+      const lateralMovement =
+        bike.position.x -
+        previousX;
 
       const speedRatio =
         THREE.MathUtils.clamp(
-          Math.abs(
-            speed.current
-          ) /
-            maxForwardSpeed,
+          speed.current /
+            22,
           0,
           1
         );
 
-      const steeringSpeed =
-        2.5 +
-        speedRatio *
-          4;
-
-      const reverse =
-        speed.current >= 0
-          ? 1
-          : -0.65;
-
-      bike.position.x +=
-        steering *
-        steeringSpeed *
-        delta *
-        reverse;
-
-      bike.position.x =
+      const turnSignal =
         THREE.MathUtils.clamp(
-          bike.position.x,
-          -5.2,
-          5.2
+          lateralMovement *
+            24,
+          -1,
+          1
         );
-
-      /*
-        ==========================
-        BIKE ANIMATION
-        ==========================
-      */
-
-      const targetYaw =
-        -steering *
-        0.15 *
-        speedRatio;
-
-      visual.rotation.y =
-        THREE.MathUtils.lerp(
-          visual.rotation.y,
-          targetYaw,
-          0.1
-        );
-
-      const targetLean =
-        -steering *
-        0.3 *
-        speedRatio;
 
       visual.rotation.z =
         THREE.MathUtils.lerp(
           visual.rotation.z,
-          targetLean,
-          0.1
+          -turnSignal *
+            0.14 *
+            speedRatio,
+          0.08
         );
 
-      const targetPitch =
-        THREE.MathUtils.clamp(
-          -accelerationForce *
-            0.035,
-          -0.045,
-          0.05
-        );
-
-      visual.rotation.x =
+      visual.rotation.y =
         THREE.MathUtils.lerp(
-          visual.rotation.x,
-          targetPitch,
+          visual.rotation.y,
+          -turnSignal *
+            0.06 *
+            speedRatio,
           0.08
         );
 
       /*
+        ==========================
         SUSPENSION
+        ==========================
       */
 
       const time =
-        state.clock
-          .elapsedTime;
+        state.clock.elapsedTime;
 
-      const roadBounce =
+      const bounce =
         Math.sin(
           time *
             (
-              9 +
+              7 +
               speedRatio *
-                18
+                10
             )
-        ) *
-        0.018 *
-        speedRatio;
-
-      const secondaryBounce =
-        Math.sin(
-          time *
-            21.3
         ) *
         0.008 *
         speedRatio;
 
-      const targetBikeY =
-        roadBounce +
-        secondaryBounce;
-
       visual.position.y =
         THREE.MathUtils.lerp(
           visual.position.y,
-          targetBikeY,
-          0.18
+          bounce,
+          0.13
         );
 
       /*
         ==========================
-        FOV
+        CAMERA
         ==========================
       */
 
@@ -1054,8 +1107,8 @@ export default function BikeController() {
       ) {
         const targetFov =
           THREE.MathUtils.lerp(
-            55,
-            68,
+            52,
+            58,
             speedRatio
           );
 
@@ -1063,92 +1116,32 @@ export default function BikeController() {
           THREE.MathUtils.lerp(
             perspectiveCamera.fov,
             targetFov,
-            0.055
+            0.045
           );
 
         perspectiveCamera.updateProjectionMatrix();
       }
 
-      /*
-        CAMERA DISTANCE
-      */
-
-      const speedCameraPull =
-        speedRatio *
-        3.2;
-
-      const accelerationCamera =
-        accelerationForce *
-        0.75;
-
-      const steeringLag =
-        -steering *
-        speedRatio *
-        0.65;
-
-      /*
-        CAMERA SHAKE
-      */
-
-      const shakeStrength =
-        Math.max(
-          0,
-          speedRatio -
-            0.55
-        ) *
-        0.11;
-
-      const shakeX =
-        Math.sin(
-          time *
-            22.5
-        ) *
-        shakeStrength;
-
-      const shakeY =
-        Math.sin(
-          time *
-            28.7
-        ) *
-        shakeStrength *
-        0.5;
-
-      /*
-        ==========================
-        CHASE CAMERA
-        ==========================
-      */
-
       const desiredCamera =
         new THREE.Vector3(
           bike.position.x *
-            0.86 +
-            steeringLag +
-            shakeX,
+            0.68,
 
           bike.position.y +
-            4.55 +
+            4.2 +
             speedRatio *
-              0.4 +
-            shakeY,
+              0.18,
 
           bike.position.z +
-            9.4 +
-            speedCameraPull +
-            accelerationCamera
-        );
-
-      const cameraFollowSpeed =
-        THREE.MathUtils.lerp(
-          6,
-          4.3,
-          speedRatio
+            10.5 +
+            speedRatio *
+              1.2
         );
 
       const cameraSmooth =
         1 -
         Math.exp(
-          -cameraFollowSpeed *
+          -3.7 *
             delta
         );
 
@@ -1157,26 +1150,19 @@ export default function BikeController() {
         cameraSmooth
       );
 
-      /*
-        LOOK AHEAD
-      */
-
       const lookAhead =
         THREE.MathUtils.lerp(
-          11,
-          18,
+          13,
+          17,
           speedRatio
         );
 
       const normalLook =
         new THREE.Vector3(
           bike.position.x *
-            0.72,
+            0.76,
 
-          bike.position.y +
-            1.15 -
-            accelerationForce *
-              0.08,
+          1.3,
 
           bike.position.z -
             lookAhead
@@ -1193,15 +1179,13 @@ export default function BikeController() {
 
       /*
         ==========================
-        HUD DATA
+        HUD PROGRESS
         ==========================
       */
 
       const displaySpeed =
         Math.round(
-          Math.abs(
-            speed.current
-          ) *
+          speed.current *
             4
         );
 
@@ -1218,12 +1202,7 @@ export default function BikeController() {
             10
         );
 
-      let progress =
-        100;
-
-      /*
-        ABOUT
-      */
+      let progress = 100;
 
       if (
         !game.aboutCompleted
@@ -1248,13 +1227,7 @@ export default function BikeController() {
             ) *
               16
           );
-      }
-
-      /*
-        SKILLS
-      */
-
-      else if (
+      } else if (
         !game.skillsCompleted
       ) {
         const total =
@@ -1278,13 +1251,7 @@ export default function BikeController() {
             ) *
               17
           );
-      }
-
-      /*
-        PROJECTS
-      */
-
-      else if (
+      } else if (
         !game.projectsCompleted
       ) {
         const total =
@@ -1308,13 +1275,7 @@ export default function BikeController() {
             ) *
               22
           );
-      }
-
-      /*
-        EXPERIENCE
-      */
-
-      else if (
+      } else if (
         !game.experienceCompleted
       ) {
         const total =
@@ -1338,13 +1299,7 @@ export default function BikeController() {
             ) *
               17
           );
-      }
-
-      /*
-        ACHIEVEMENTS
-      */
-
-      else if (
+      } else if (
         !game.achievementsCompleted
       ) {
         const total =
@@ -1368,13 +1323,7 @@ export default function BikeController() {
             ) *
               16
           );
-      }
-
-      /*
-        CONTACT
-      */
-
-      else {
+      } else {
         const total =
           (
             ACHIEVEMENT_STOP_Z -

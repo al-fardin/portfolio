@@ -24,8 +24,6 @@ import Road from "./Road";
 
 import RoadsideDetails from "./RoadsideDetails";
 
-import ScenicEnvironment from "./ScenicEnvironment";
-
 import SkyEnvironment from "./SkyEnvironment";
 
 export default function World() {
@@ -67,35 +65,31 @@ export default function World() {
 
   return (
     <>
-      {/* ====================== */}
-      {/* SKY + ATMOSPHERE */}
-      {/* ====================== */}
+      {/* SKY */}
 
       <SkyEnvironment />
 
-      {/* ====================== */}
-      {/* LOCATION LIGHTING */}
-      {/* ====================== */}
+      {/* WARM LOCATION LIGHTS */}
 
       <pointLight
         position={[
-          -18,
-          9,
+          -12,
+          10,
           -100,
         ]}
-        color="#8b5cf6"
-        intensity={12}
-        distance={65}
+        color="#f0b080"
+        intensity={8}
+        distance={60}
       />
 
       <pointLight
         position={[
-          18,
-          9,
+          14,
+          10,
           -250,
         ]}
-        color="#22d3ee"
-        intensity={14}
+        color="#a4c3ba"
+        intensity={9}
         distance={70}
       />
 
@@ -105,70 +99,53 @@ export default function World() {
           14,
           -420,
         ]}
-        color="#8b5cf6"
-        intensity={22}
-        distance={100}
+        color="#d6a285"
+        intensity={12}
+        distance={90}
       />
 
       <pointLight
         position={[
-          -10,
-          10,
+          -8,
+          12,
           -540,
         ]}
-        color="#fb923c"
-        intensity={18}
-        distance={100}
+        color="#e5a86f"
+        intensity={12}
+        distance={95}
       />
 
       <pointLight
         position={[
-          10,
+          8,
           12,
           -700,
         ]}
-        color="#f59e0b"
-        intensity={18}
-        distance={110}
+        color="#d1a57f"
+        intensity={10}
+        distance={100}
       />
 
       <pointLight
         position={[
           0,
-          20,
+          18,
           -900,
         ]}
-        color="#22d3ee"
-        intensity={40}
-        distance={150}
+        color="#8baab8"
+        intensity={18}
+        distance={130}
       />
 
-      <pointLight
-        position={[
-          25,
-          15,
-          -920,
-        ]}
-        color="#7c3aed"
-        intensity={24}
-        distance={100}
-      />
-
-      {/* ====================== */}
-      {/* WORLD TERRAIN */}
-      {/* ====================== */}
+      {/* WORLD */}
 
       <Road />
 
       <RoadsideDetails />
 
-      <ScenicEnvironment />
-
       <Buildings />
 
-      {/* ====================== */}
       {/* ABOUT */}
-      {/* ====================== */}
 
       <DestinationMarker
         position={[
@@ -177,8 +154,8 @@ export default function World() {
           -120,
         ]}
         index="01"
-        title="ABOUT VIEWPOINT"
-        color="#8b5cf6"
+        title="ABOUT"
+        color="#e1775f"
         active={
           !aboutCompleted
         }
@@ -187,9 +164,7 @@ export default function World() {
         }
       />
 
-      {/* ====================== */}
       {/* SKILLS */}
-      {/* ====================== */}
 
       <SkillsGarage />
 
@@ -200,8 +175,8 @@ export default function World() {
           -252,
         ]}
         index="02"
-        title="SKILLS GARAGE"
-        color="#22d3ee"
+        title="SKILLS"
+        color="#8ba59c"
         active={
           aboutCompleted &&
           !skillsCompleted
@@ -211,9 +186,7 @@ export default function World() {
         }
       />
 
-      {/* ====================== */}
-      {/* PROJECT CITY */}
-      {/* ====================== */}
+      {/* PROJECTS */}
 
       <ProjectCity />
 
@@ -224,8 +197,8 @@ export default function World() {
           -420,
         ]}
         index="03"
-        title="PROJECT CITY"
-        color="#a855f7"
+        title="PROJECTS"
+        color="#d18b70"
         active={
           skillsCompleted &&
           !projectsCompleted
@@ -235,9 +208,7 @@ export default function World() {
         }
       />
 
-      {/* ====================== */}
       {/* EXPERIENCE */}
-      {/* ====================== */}
 
       <ExperienceHighway />
 
@@ -248,8 +219,8 @@ export default function World() {
           -575,
         ]}
         index="04"
-        title="EXPERIENCE HIGHWAY"
-        color="#fb923c"
+        title="EXPERIENCE"
+        color="#e0ad6b"
         active={
           projectsCompleted &&
           !experienceCompleted
@@ -259,9 +230,7 @@ export default function World() {
         }
       />
 
-      {/* ====================== */}
       {/* ACHIEVEMENTS */}
-      {/* ====================== */}
 
       <AchievementBridge />
 
@@ -272,8 +241,8 @@ export default function World() {
           -750,
         ]}
         index="05"
-        title="ACHIEVEMENT BRIDGE"
-        color="#f59e0b"
+        title="ACHIEVEMENTS"
+        color="#b3a2b9"
         active={
           experienceCompleted &&
           !achievementsCompleted
@@ -283,9 +252,7 @@ export default function World() {
         }
       />
 
-      {/* ====================== */}
       {/* CONTACT */}
-      {/* ====================== */}
 
       <ContactTower />
 
@@ -296,8 +263,8 @@ export default function World() {
           -900,
         ]}
         index="06"
-        title="CONTACT TOWER"
-        color="#22d3ee"
+        title="CONTACT"
+        color="#7f9da8"
         active={
           achievementsCompleted &&
           !contactCompleted
@@ -306,10 +273,6 @@ export default function World() {
           contactCompleted
         }
       />
-
-      {/* ====================== */}
-      {/* PLAYER */}
-      {/* ====================== */}
 
       <BikeController />
     </>

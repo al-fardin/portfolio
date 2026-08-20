@@ -1,7 +1,12 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
+import {
+  Canvas,
+} from "@react-three/fiber";
+
 import * as THREE from "three";
+
+import PostProcessing from "@/components/game/PostProcessing";
 
 import World from "@/components/world/World";
 
@@ -10,36 +15,60 @@ export default function GameCanvas() {
     <div
       className="game-container"
       style={{
-        position: "absolute",
+        position:
+          "absolute",
+
         inset: 0,
-        width: "100%",
-        height: "100%",
-        overflow: "hidden",
-        background: "#050812",
+
+        width:
+          "100%",
+
+        height:
+          "100%",
+
+        overflow:
+          "hidden",
+
+        background:
+          "#030509",
       }}
     >
       <Canvas
         shadows
-        dpr={[1, 1.5]}
+        dpr={[
+          1,
+          1.5,
+        ]}
         camera={{
           position: [
             0,
             4.5,
             10,
           ],
+
           fov: 55,
+
           near: 0.1,
+
           far: 1200,
         }}
         gl={{
           antialias: true,
+
           powerPreference:
             "high-performance",
+
+          alpha: false,
         }}
         onCreated={({
           gl,
-          scene,
         }) => {
+          /*
+            =====================
+            CINEMATIC COLOR
+            =====================
+          */
+
           gl.toneMapping =
             THREE.ACESFilmicToneMapping;
 
@@ -49,20 +78,43 @@ export default function GameCanvas() {
           gl.outputColorSpace =
             THREE.SRGBColorSpace;
 
-          scene.background =
-            new THREE.Color(
-              "#050812"
-            );
+          /*
+            Better shadows / lights
+          */
+
+          gl.shadowMap.enabled =
+            true;
+
+          gl.shadowMap.type =
+            THREE.PCFSoftShadowMap;
         }}
         style={{
-          position: "absolute",
+          position:
+            "absolute",
+
           inset: 0,
-          width: "100%",
-          height: "100%",
-          display: "block",
+
+          width:
+            "100%",
+
+          height:
+            "100%",
+
+          display:
+            "block",
         }}
       >
+        {/* ==================== */}
+        {/* 3D WORLD */}
+        {/* ==================== */}
+
         <World />
+
+        {/* ==================== */}
+        {/* CINEMATIC EFFECTS */}
+        {/* ==================== */}
+
+        <PostProcessing />
       </Canvas>
     </div>
   );

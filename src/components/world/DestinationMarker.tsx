@@ -1,16 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-
 import {
   Html,
 } from "@react-three/drei";
-
-import {
-  useFrame,
-} from "@react-three/fiber";
-
-import * as THREE from "three";
 
 type DestinationMarkerProps = {
   position: [
@@ -20,11 +12,13 @@ type DestinationMarkerProps = {
   ];
 
   index: string;
+
   title: string;
 
   color: string;
 
   active: boolean;
+
   completed: boolean;
 };
 
@@ -32,167 +26,191 @@ export default function DestinationMarker({
   position,
   index,
   title,
-  color,
   active,
   completed,
 }: DestinationMarkerProps) {
-  const ringRef =
-    useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (
-      ringRef.current &&
-      active
-    ) {
-      ringRef.current.rotation.z +=
-        delta * 0.65;
-    }
-  });
-
-  /*
-    Completed destination
-    no longer needs marker
-  */
-
   if (completed) {
     return null;
   }
 
-  const opacity =
-    active ? 1 : 0.18;
-
   return (
-    <group position={position}>
+    <group
+      position={position}
+    >
+      {/* LEFT COLUMN */}
 
       <mesh
-        ref={ringRef}
-        position={[0, 0.09, 0]}
-        rotation={[
-          -Math.PI / 2,
-          0,
+        position={[
+          -6,
+          3.6,
           0,
         ]}
       >
-        <torusGeometry
+        <boxGeometry
           args={[
-            3,
-            0.08,
-            16,
-            64,
+            0.22,
+            7.2,
+            0.22,
           ]}
         />
 
         <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={
-            active ? 5 : 0.5
+          color={
+            active
+              ? "#d9826a"
+              : "#aaa79f"
           }
-          transparent
-          opacity={opacity}
         />
       </mesh>
 
-      {active && (
-        <>
-          <mesh
-            position={[
-              0,
-              4,
-              0,
-            ]}
+      {/* RIGHT COLUMN */}
+
+      <mesh
+        position={[
+          6,
+          3.6,
+          0,
+        ]}
+      >
+        <boxGeometry
+          args={[
+            0.22,
+            7.2,
+            0.22,
+          ]}
+        />
+
+        <meshStandardMaterial
+          color={
+            active
+              ? "#d9826a"
+              : "#aaa79f"
+          }
+        />
+      </mesh>
+
+      {/* TOP BEAM */}
+
+      <mesh
+        position={[
+          0,
+          7,
+          0,
+        ]}
+      >
+        <boxGeometry
+          args={[
+            12.2,
+            0.22,
+            0.22,
+          ]}
+        />
+
+        <meshStandardMaterial
+          color={
+            active
+              ? "#d9826a"
+              : "#aaa79f"
+          }
+        />
+      </mesh>
+
+      {/* TEXT */}
+
+      <Html
+        position={[
+          0,
+          5.7,
+          0,
+        ]}
+        center
+        distanceFactor={14}
+      >
+        <div
+          style={{
+            textAlign:
+              "center",
+
+            color:
+              "#26303b",
+
+            fontFamily:
+              "Arial, sans-serif",
+
+            pointerEvents:
+              "none",
+
+            whiteSpace:
+              "nowrap",
+
+            opacity:
+              active
+                ? 1
+                : 0.45,
+          }}
+        >
+          <div
+            style={{
+              fontFamily:
+                "monospace",
+
+              fontSize:
+                "7px",
+
+              letterSpacing:
+                "0.35em",
+
+              opacity:
+                0.45,
+            }}
           >
-            <cylinderGeometry
-              args={[
-                0.07,
-                0.07,
-                8,
-                16,
-              ]}
-            />
+            CHAPTER{" "}
+            {index}
+          </div>
 
-            <meshStandardMaterial
-              color={color}
-              emissive={color}
-              emissiveIntensity={5}
-              transparent
-              opacity={0.35}
-            />
-          </mesh>
+          <div
+            style={{
+              marginTop:
+                "8px",
 
-          <pointLight
-            position={[
-              0,
-              2,
-              0,
+              fontSize:
+                "18px",
+
+              fontWeight:
+                700,
+
+              letterSpacing:
+                "0.08em",
+            }}
+          >
+            {title}
+          </div>
+        </div>
+      </Html>
+
+      {/* SIMPLE ROAD MARK */}
+
+      {active && (
+        <mesh
+          position={[
+            0,
+            0.08,
+            3,
+          ]}
+        >
+          <boxGeometry
+            args={[
+              5,
+              0.03,
+              0.12,
             ]}
-            color={color}
-            intensity={30}
-            distance={18}
           />
 
-          <Html
-            position={[
-              0,
-              5.2,
-              0,
-            ]}
-            center
-            distanceFactor={18}
-          >
-            <div
-              style={{
-                minWidth: "190px",
-                padding: "10px 14px",
-
-                border: `1px solid ${color}`,
-
-                background:
-                  "rgba(4,6,10,0.78)",
-
-                color: "white",
-
-                textAlign:
-                  "center",
-
-                fontFamily:
-                  "monospace",
-
-                letterSpacing:
-                  "0.12em",
-
-                fontSize:
-                  "11px",
-
-                backdropFilter:
-                  "blur(10px)",
-
-                pointerEvents:
-                  "none",
-              }}
-            >
-              <div
-                style={{
-                  opacity: 0.5,
-                  fontSize: "9px",
-                }}
-              >
-                DESTINATION {index}
-              </div>
-
-              <div
-                style={{
-                  marginTop: "4px",
-                  fontWeight: 700,
-                }}
-              >
-                {title}
-              </div>
-            </div>
-          </Html>
-        </>
+          <meshStandardMaterial
+            color="#e1775f"
+          />
+        </mesh>
       )}
-
     </group>
   );
 }

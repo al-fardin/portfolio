@@ -33,19 +33,10 @@ export default function StartupOverlay() {
         state.startJourney
     );
 
-  const [
-    stage,
-    setStage,
-  ] =
+  const [stage, setStage] =
     useState<BootStage>(
       "boot"
     );
-
-  /*
-    ==========================
-    BOOT SEQUENCE
-    ==========================
-  */
 
   useEffect(() => {
     if (
@@ -60,31 +51,25 @@ export default function StartupOverlay() {
     const worldTimer =
       window.setTimeout(
         () => {
-          setStage(
-            "world"
-          );
+          setStage("world");
         },
-        850
+        650
       );
 
     const routeTimer =
       window.setTimeout(
         () => {
-          setStage(
-            "route"
-          );
+          setStage("route");
         },
-        1650
+        1250
       );
 
     const readyTimer =
       window.setTimeout(
         () => {
-          setStage(
-            "ready"
-          );
+          setStage("ready");
         },
-        2450
+        1850
       );
 
     return () => {
@@ -102,10 +87,6 @@ export default function StartupOverlay() {
     };
   }, [sceneMode]);
 
-  /*
-    ENTER KEY
-  */
-
   useEffect(() => {
     if (
       sceneMode !==
@@ -114,19 +95,17 @@ export default function StartupOverlay() {
       return;
     }
 
-    const handleKey =
-      (
-        event: KeyboardEvent
-      ) => {
-        if (
-          event.key ===
-            "Enter" &&
-          stage ===
-            "ready"
-        ) {
-          startJourney();
-        }
-      };
+    const handleKey = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key ===
+          "Enter" &&
+        stage === "ready"
+      ) {
+        startJourney();
+      }
+    };
 
     window.addEventListener(
       "keydown",
@@ -146,8 +125,7 @@ export default function StartupOverlay() {
   ]);
 
   if (
-    sceneMode !==
-    "startup"
+    sceneMode !== "startup"
   ) {
     return null;
   }
@@ -155,46 +133,24 @@ export default function StartupOverlay() {
   const ready =
     stage === "ready";
 
-  let status =
-    "INITIALIZING SYSTEM";
+  let progress = 18;
 
-  let progress =
-    "18";
-
-  if (
-    stage === "world"
-  ) {
-    status =
-      "LOADING WORLD";
-
-    progress =
-      "46";
+  if (stage === "world") {
+    progress = 48;
   }
 
-  if (
-    stage === "route"
-  ) {
-    status =
-      "SYNCING JOURNEY";
-
-    progress =
-      "78";
+  if (stage === "route") {
+    progress = 78;
   }
 
-  if (
-    stage === "ready"
-  ) {
-    status =
-      "IGNITION READY";
-
-    progress =
-      "100";
+  if (stage === "ready") {
+    progress = 100;
   }
 
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[60] overflow-hidden text-white"
+        className="fixed inset-0 z-[60] overflow-hidden"
         initial={{
           opacity: 1,
         }}
@@ -205,335 +161,211 @@ export default function StartupOverlay() {
           duration: 1,
         }}
       >
-        {/* ===================== */}
-        {/* DARK CINEMATIC FILTER */}
-        {/* ===================== */}
+        {/* SOFT IVORY FILTER */}
 
         <motion.div
-          className="absolute inset-0 bg-black"
-          initial={{
-            opacity: 1,
+          className="absolute inset-0"
+          style={{
+            background:
+              "#eee9df",
           }}
           animate={{
-            opacity:
-              ready
-                ? 0.34
-                : 0.74,
+            opacity: ready
+              ? 0.78
+              : 0.96,
           }}
           transition={{
-            duration:
-              1.2,
+            duration: 1.2,
           }}
         />
 
-        {/* ===================== */}
-        {/* CENTER GLOW */}
-        {/* ===================== */}
+        {/* SUN GLOW */}
 
         <motion.div
-          className="absolute left-1/2 top-1/2 h-[650px] w-[650px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          className="absolute -right-[10vw] -top-[20vh] h-[65vw] w-[65vw] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(124,58,237,0.18), rgba(34,211,238,0.05) 38%, transparent 70%)",
+              "radial-gradient(circle, rgba(225,119,95,.28), rgba(230,168,92,.10) 40%, transparent 70%)",
           }}
           animate={{
-            opacity:
-              ready
-                ? 1
-                : 0.45,
-
-            scale:
-              ready
-                ? 1.1
-                : 0.9,
+            scale: ready
+              ? 1.08
+              : 0.94,
           }}
           transition={{
             duration: 1.4,
           }}
         />
 
-        {/* ===================== */}
-        {/* SCAN LINES */}
-        {/* ===================== */}
+        {/* LEFT DECORATION */}
 
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.12]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(255,255,255,0.05) 4px)",
+        <motion.div
+          className="absolute bottom-0 left-[5vw] h-[26vh] w-[7vw] rounded-t-full bg-[#8ba59c]/40"
+          initial={{
+            y: 100,
+          }}
+          animate={{
+            y: 0,
+          }}
+          transition={{
+            delay: 0.35,
+            duration: 0.9,
           }}
         />
 
-        {/* ===================== */}
-        {/* TOP LEFT SYSTEM */}
-        {/* ===================== */}
-
         <motion.div
-          className="absolute left-7 top-7 font-mono"
+          className="absolute bottom-0 left-[11vw] h-[17vh] w-[10vw] rounded-t-[4rem] bg-[#d18b70]/45"
           initial={{
-            opacity: 0,
-            x: -20,
+            y: 120,
           }}
           animate={{
-            opacity: 1,
-            x: 0,
+            y: 0,
           }}
           transition={{
-            delay: 0.25,
+            delay: 0.45,
+            duration: 0.9,
           }}
-        >
-          <p className="text-[9px] tracking-[0.38em] text-white/30">
-            NEXUS SYSTEM
+        />
+
+        {/* TOP */}
+
+        <div className="absolute left-8 top-7 text-[#26303b]">
+          <p className="text-xs font-semibold tracking-[0.28em]">
+            NEXUS
           </p>
 
-          <p className="mt-2 text-[10px] tracking-[0.18em] text-cyan-300/70">
-            ONLINE
+          <p className="mt-1 font-mono text-[8px] tracking-[0.3em] opacity-40">
+            DIGITAL WORLD
           </p>
-        </motion.div>
+        </div>
 
-        {/* ===================== */}
-        {/* TOP RIGHT */}
-        {/* ===================== */}
-
-        <motion.div
-          className="absolute right-7 top-7 text-right font-mono"
-          initial={{
-            opacity: 0,
-            x: 20,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{
-            delay: 0.3,
-          }}
-        >
-          <p className="text-[9px] tracking-[0.35em] text-white/25">
-            ROUTE
+        <div className="absolute right-8 top-7 text-right font-mono text-[#26303b]/40">
+          <p className="text-[8px] tracking-[0.3em]">
+            06 CHAPTERS
           </p>
+        </div>
 
-          <p className="mt-2 text-[10px] tracking-[0.18em] text-violet-300/80">
-            06 DESTINATIONS
-          </p>
-        </motion.div>
-
-        {/* ===================== */}
-        {/* CENTER CONTENT */}
-        {/* ===================== */}
+        {/* MAIN */}
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full max-w-3xl px-8 text-center">
-
-            {/* SYMBOL */}
-
-            <motion.div
-              className="mx-auto flex h-16 w-16 items-center justify-center border border-violet-300/30 bg-black/30 backdrop-blur-xl"
-              initial={{
-                opacity: 0,
-                scale: 0.6,
-                rotate: -45,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                rotate: 45,
-              }}
-              transition={{
-                delay: 0.35,
-                duration: 0.8,
-              }}
-            >
-              <motion.div
-                className="h-5 w-5 border border-cyan-300"
-                animate={{
-                  rotate: 360,
-                }}
-                transition={{
-                  duration: 5,
-                  ease: "linear",
-                  repeat: Infinity,
-                }}
-              />
-            </motion.div>
-
-            {/* SMALL TITLE */}
+          <div className="relative w-full max-w-5xl px-8 text-center text-[#26303b]">
 
             <motion.p
-              className="mt-8 font-mono text-[10px] tracking-[0.6em] text-white/35"
+              className="font-mono text-[9px] tracking-[0.55em] opacity-45"
               initial={{
                 opacity: 0,
                 y: 10,
               }}
               animate={{
-                opacity: 1,
+                opacity: 0.45,
                 y: 0,
               }}
               transition={{
-                delay: 0.55,
+                delay: 0.3,
               }}
             >
-              INTERACTIVE PORTFOLIO
+              AN INTERACTIVE PORTFOLIO
             </motion.p>
 
-            {/* MAIN LOGO */}
-
             <motion.h1
-              className="mt-5 text-5xl font-semibold tracking-[-0.055em] md:text-8xl"
+              className="mt-5 text-7xl font-semibold tracking-[-0.075em] md:text-[9rem]"
               initial={{
                 opacity: 0,
-                y: 28,
-                filter:
-                  "blur(12px)",
+                y: 40,
               }}
               animate={{
                 opacity: 1,
                 y: 0,
-                filter:
-                  "blur(0px)",
               }}
               transition={{
-                delay: 0.7,
-                duration: 1,
+                delay: 0.45,
+                duration: 0.9,
               }}
             >
               NEXUS
-              <span className="text-violet-400">
-                {" "}
-                RIDE
-              </span>
             </motion.h1>
 
-            {/* DIVIDER */}
-
             <motion.div
-              className="mx-auto mt-7 h-px bg-gradient-to-r from-transparent via-cyan-300/60 to-transparent"
+              className="mx-auto mt-1 h-[3px] bg-[#e1775f]"
               initial={{
                 width: 0,
               }}
               animate={{
-                width:
-                  "70%",
-              }}
-              transition={{
-                delay: 0.9,
-                duration: 1,
-              }}
-            />
-
-            {/* TAGLINE */}
-
-            <motion.p
-              className="mx-auto mt-6 max-w-xl text-xs leading-6 tracking-[0.12em] text-white/45 md:text-sm"
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                opacity: 1,
-              }}
-              transition={{
-                delay: 1,
-              }}
-            >
-              A CINEMATIC JOURNEY
-              THROUGH CODE, PROJECTS
-              AND ENGINEERING.
-            </motion.p>
-
-            {/* ================= */}
-            {/* SYSTEM STATUS */}
-            {/* ================= */}
-
-            <motion.div
-              className="mx-auto mt-9 max-w-sm"
-              initial={{
-                opacity: 0,
-                y: 15,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
+                width: "110px",
               }}
               transition={{
                 delay: 0.75,
+                duration: 0.8,
+              }}
+            />
+
+            <motion.p
+              className="mx-auto mt-7 max-w-lg text-xs leading-6 tracking-[0.13em] text-[#26303b]/55"
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                delay: 0.8,
               }}
             >
-              <div className="flex items-center justify-between font-mono text-[9px] tracking-[0.22em]">
-                <AnimatePresence
-                  mode="wait"
-                >
-                  <motion.span
-                    key={
-                      status
-                    }
-                    className={
-                      ready
-                        ? "text-cyan-300"
-                        : "text-white/35"
-                    }
-                    initial={{
-                      opacity: 0,
-                      y: 5,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      y: -5,
-                    }}
-                  >
-                    {status}
-                  </motion.span>
-                </AnimatePresence>
+              RIDE THROUGH A SMALL
+              DIGITAL WORLD BUILT
+              AROUND CODE, IDEAS
+              AND PROJECTS.
+            </motion.p>
 
-                <span className="text-white/25">
-                  {progress}%
-                </span>
-              </div>
+            {/* LOADER */}
 
-              {/* PROGRESS TRACK */}
-
-              <div className="mt-3 h-[2px] w-full overflow-hidden bg-white/10">
+            <motion.div
+              className="mx-auto mt-9 w-[230px]"
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              transition={{
+                delay: 0.65,
+              }}
+            >
+              <div className="h-[2px] overflow-hidden bg-[#26303b]/10">
                 <motion.div
-                  className="h-full bg-gradient-to-r from-violet-500 to-cyan-300"
-                  initial={{
-                    width:
-                      "5%",
-                  }}
+                  className="h-full bg-[#e1775f]"
                   animate={{
                     width: `${progress}%`,
                   }}
                   transition={{
-                    duration:
-                      0.75,
-
-                    ease:
-                      "easeOut",
+                    duration: 0.55,
                   }}
                 />
               </div>
+
+              <div className="mt-3 flex justify-between font-mono text-[7px] tracking-[0.25em] text-[#26303b]/35">
+                <span>
+                  WORLD LOADING
+                </span>
+
+                <span>
+                  {progress}%
+                </span>
+              </div>
             </motion.div>
 
-            {/* ================= */}
-            {/* START BUTTON */}
-            {/* ================= */}
+            {/* START */}
 
             <AnimatePresence>
               {ready && (
                 <motion.div
                   initial={{
                     opacity: 0,
-                    y: 20,
+                    y: 18,
                   }}
                   animate={{
                     opacity: 1,
                     y: 0,
-                  }}
-                  transition={{
-                    duration:
-                      0.6,
                   }}
                 >
                   <motion.button
@@ -541,93 +373,35 @@ export default function StartupOverlay() {
                     onClick={
                       startJourney
                     }
-                    className="pointer-events-auto mt-9 border border-cyan-300/40 bg-black/45 px-8 py-4 text-xs tracking-[0.32em] text-white backdrop-blur-xl transition hover:border-cyan-200 hover:bg-cyan-300/10"
+                    className="pointer-events-auto mt-9 rounded-full border border-[#26303b]/20 bg-[#f6f1e8]/70 px-9 py-4 text-[10px] font-medium tracking-[0.28em] text-[#26303b] backdrop-blur-md transition hover:border-[#e1775f] hover:bg-[#f8f3eb]"
                     whileHover={{
-                      scale:
-                        1.04,
+                      scale: 1.04,
                     }}
                     whileTap={{
-                      scale:
-                        0.97,
+                      scale: 0.97,
                     }}
                   >
-                    START JOURNEY
-
-                    <span className="ml-5 font-mono text-white/35">
-                      ENTER ↵
-                    </span>
+                    START RIDE
                   </motion.button>
 
-                  <motion.p
-                    className="mt-5 font-mono text-[8px] tracking-[0.28em] text-white/25"
-                    animate={{
-                      opacity: [
-                        0.3,
-                        0.8,
-                        0.3,
-                      ],
-                    }}
-                    transition={{
-                      duration:
-                        1.8,
-
-                      repeat:
-                        Infinity,
-                    }}
-                  >
-                    IGNITION SYSTEM READY
-                  </motion.p>
+                  <p className="mt-5 font-mono text-[8px] tracking-[0.3em] text-[#26303b]/30">
+                    SCROLL TO EXPLORE
+                  </p>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* ===================== */}
-        {/* BOTTOM HUD */}
-        {/* ===================== */}
+        {/* BOTTOM */}
 
-        <motion.div
-          className="absolute bottom-7 left-7 font-mono"
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 1,
-          }}
-        >
-          <p className="text-[8px] tracking-[0.3em] text-white/20">
-            CONTROL SYSTEM
-          </p>
+        <div className="absolute bottom-7 left-8 font-mono text-[8px] tracking-[0.25em] text-[#26303b]/30">
+          SCROLL / SWIPE
+        </div>
 
-          <p className="mt-2 text-[9px] tracking-[0.18em] text-white/35">
-            W / S / A / D
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="absolute bottom-7 right-7 text-right font-mono"
-          initial={{
-            opacity: 0,
-          }}
-          animate={{
-            opacity: 1,
-          }}
-          transition={{
-            delay: 1.1,
-          }}
-        >
-          <p className="text-[8px] tracking-[0.3em] text-white/20">
-            EXPERIENCE
-          </p>
-
-          <p className="mt-2 text-[9px] tracking-[0.18em] text-white/35">
-            3D / INTERACTIVE
-          </p>
-        </motion.div>
+        <div className="absolute bottom-7 right-8 font-mono text-[8px] tracking-[0.25em] text-[#26303b]/30">
+          PORTFOLIO 2026
+        </div>
       </motion.div>
     </AnimatePresence>
   );
