@@ -3,22 +3,17 @@
 import BikeController from "@/components/bike/BikeController";
 
 import AchievementBridge from "@/components/locations/AchievementBridge";
-
 import ContactTower from "@/components/locations/ContactTower";
-
 import ExperienceHighway from "@/components/locations/ExperienceHighway";
-
 import ProjectCity from "@/components/locations/ProjectCity";
-
 import SkillsGarage from "@/components/locations/SkillsGarage";
 
 import { useGameStore } from "@/store/useGameStore";
 
 import Buildings from "./Buildings";
-
 import DestinationMarker from "./DestinationMarker";
-
 import Road from "./Road";
+import RoadsideDetails from "./RoadsideDetails";
 
 export default function World() {
   const aboutCompleted =
@@ -65,9 +60,7 @@ export default function World() {
 
       <color
         attach="background"
-        args={[
-          "#050812",
-        ]}
+        args={["#050812"]}
       />
 
       <fog
@@ -80,7 +73,7 @@ export default function World() {
       />
 
       {/* ====================== */}
-      {/* BASE LIGHT */}
+      {/* GLOBAL LIGHTING */}
       {/* ====================== */}
 
       <hemisphereLight
@@ -96,6 +89,7 @@ export default function World() {
       />
 
       {/* Moon */}
+
       <directionalLight
         position={[
           -30,
@@ -105,30 +99,17 @@ export default function World() {
         intensity={2}
         color="#dbeafe"
         castShadow
-        shadow-mapSize-width={
-          2048
-        }
-        shadow-mapSize-height={
-          2048
-        }
-        shadow-camera-far={
-          120
-        }
-        shadow-camera-left={
-          -30
-        }
-        shadow-camera-right={
-          30
-        }
-        shadow-camera-top={
-          30
-        }
-        shadow-camera-bottom={
-          -30
-        }
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-far={120}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
       />
 
-      {/* Soft purple atmosphere */}
+      {/* Purple atmosphere */}
+
       <pointLight
         position={[
           -18,
@@ -140,7 +121,8 @@ export default function World() {
         distance={85}
       />
 
-      {/* Soft cyan atmosphere */}
+      {/* Cyan atmosphere */}
+
       <pointLight
         position={[
           18,
@@ -153,6 +135,7 @@ export default function World() {
       />
 
       {/* Project city */}
+
       <pointLight
         position={[
           15,
@@ -164,7 +147,8 @@ export default function World() {
         distance={100}
       />
 
-      {/* Highway warm lighting */}
+      {/* Highway */}
+
       <pointLight
         position={[
           -10,
@@ -176,7 +160,8 @@ export default function World() {
         distance={100}
       />
 
-      {/* Achievement bridge */}
+      {/* Achievement */}
+
       <pointLight
         position={[
           10,
@@ -188,7 +173,8 @@ export default function World() {
         distance={110}
       />
 
-      {/* Final contact city */}
+      {/* Contact */}
+
       <pointLight
         position={[
           0,
@@ -212,14 +198,18 @@ export default function World() {
       />
 
       {/* ====================== */}
-      {/* WORLD */}
+      {/* BASE WORLD */}
       {/* ====================== */}
 
       <Road />
 
+      <RoadsideDetails />
+
       <Buildings />
 
+      {/* ====================== */}
       {/* ABOUT */}
+      {/* ====================== */}
 
       <DestinationMarker
         position={[
@@ -238,7 +228,9 @@ export default function World() {
         }
       />
 
+      {/* ====================== */}
       {/* SKILLS */}
+      {/* ====================== */}
 
       <SkillsGarage />
 
@@ -260,7 +252,9 @@ export default function World() {
         }
       />
 
-      {/* PROJECTS */}
+      {/* ====================== */}
+      {/* PROJECT CITY */}
+      {/* ====================== */}
 
       <ProjectCity />
 
@@ -282,7 +276,9 @@ export default function World() {
         }
       />
 
+      {/* ====================== */}
       {/* EXPERIENCE */}
+      {/* ====================== */}
 
       <ExperienceHighway />
 
@@ -304,7 +300,9 @@ export default function World() {
         }
       />
 
+      {/* ====================== */}
       {/* ACHIEVEMENTS */}
+      {/* ====================== */}
 
       <AchievementBridge />
 
@@ -326,7 +324,9 @@ export default function World() {
         }
       />
 
+      {/* ====================== */}
       {/* CONTACT */}
+      {/* ====================== */}
 
       <ContactTower />
 
@@ -348,7 +348,9 @@ export default function World() {
         }
       />
 
+      {/* ====================== */}
       {/* PLAYER */}
+      {/* ====================== */}
 
       <BikeController />
     </>
