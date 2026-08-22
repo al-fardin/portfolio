@@ -11,15 +11,14 @@ import {
 
 import * as THREE from "three";
 
-import CinematicWorld from "@/components/cinematic/CinematicWorld";
-
 import IntroWorld from "@/components/intro/IntroWorld";
-
 import CafeStartOverlay from "@/components/intro/CafeStartOverlay";
-
 import MosqueIntroOverlay from "@/components/intro/MosqueIntroOverlay";
-
 import IntroTransition from "@/components/intro/IntroTransition";
+import LoadingScreen from "@/components/intro/LoadingScreen";
+
+import BikeJourneyWorld from "@/components/ride/BikeJourneyWorld";
+import RidePromptOverlay from "@/components/ride/RidePromptOverlay";
 
 import {
   useIntroFlow,
@@ -38,6 +37,12 @@ export default function GameCanvas() {
         state.walkProgress
     );
 
+  const assetsReady =
+    useIntroFlow(
+      (state) =>
+        state.assetsReady
+    );
+
   const setWalkProgress =
     useIntroFlow(
       (state) =>
@@ -51,15 +56,18 @@ export default function GameCanvas() {
     );
 
   /* =========================================
-     TEMP WALK CONTROL
-
-     পরে actual character/camera movement
-     IntroWorld-এর ভিতরে করব।
+     CAFÉ → MOSQUE INPUT
   ========================================= */
 
   useEffect(() => {
+    /*
+      World fully loaded না হলে
+      কোনো journey input নেই।
+    */
+
     if (
-      stage !== "walk"
+      stage !== "walk" ||
+      !assetsReady
     ) {
       return;
     }
@@ -102,10 +110,8 @@ export default function GameCanvas() {
       event: KeyboardEvent
     ) => {
       if (
-        event.key !==
-          "w" &&
-        event.key !==
-          "W" &&
+        event.key !== "w" &&
+        event.key !== "W" &&
         event.key !==
           "ArrowUp"
       ) {
@@ -163,6 +169,7 @@ export default function GameCanvas() {
     };
   }, [
     stage,
+    assetsReady,
     setStage,
     setWalkProgress,
   ]);
@@ -172,6 +179,7 @@ export default function GameCanvas() {
       style={{
         position:
           "absolute",
+
         inset: 0,
 
         width:
@@ -184,11 +192,11 @@ export default function GameCanvas() {
           "hidden",
 
         background:
-          "#111820",
+          "#050608",
       }}
     >
       {/* =====================================
-          ONLY ONE R3F CANVAS
+          3D WORLD LOADS BEHIND LOADER
       ===================================== */}
 
       <Canvas
@@ -206,11 +214,9 @@ export default function GameCanvas() {
 
           fov: 48,
 
-          near:
-            0.1,
+          near: 0.1,
 
-          far:
-            1200,
+          far: 1200,
         }}
         gl={{
           antialias:
@@ -240,25 +246,13 @@ export default function GameCanvas() {
           gl.shadowMap.type =
             THREE.PCFSoftShadowMap;
         }}
-        style={{
-          position:
-            "absolute",
-
-          inset: 0,
-
-          width:
-            "100%",
-
-          height:
-            "100%",
-        }}
       >
         <Suspense
           fallback={null}
         >
           {stage ===
           "bike" ? (
-            <CinematicWorld />
+            <BikeJourneyWorld />
           ) : (
             <IntroWorld
               stage={
@@ -273,7 +267,16 @@ export default function GameCanvas() {
       </Canvas>
 
       {/* =====================================
-          HTML UI MUST STAY OUTSIDE CANVAS
+          LOADING SCREEN
+
+          Always above everything until
+          all tracked 3D assets are ready.
+      ===================================== */}
+
+      <LoadingScreen />
+
+      {/* =====================================
+          UI
       ===================================== */}
 
       <CafeStartOverlay />
@@ -282,87 +285,88 @@ export default function GameCanvas() {
 
       <IntroTransition />
 
+      <RidePromptOverlay />
+
       {/* =====================================
-          WALK INDICATOR
+          WALK PROGRESS
+
+          loading complete না হলে hide।
       ===================================== */}
 
-      {stage ===
-        "walk" && (
-        <div
-          style={{
-            position:
-              "absolute",
-
-            left:
-              "50%",
-
-            bottom:
-              "6vh",
-
-            transform:
-              "translateX(-50%)",
-
-            zIndex: 20,
-
-            width:
-              "min(360px, 72vw)",
-
-            pointerEvents:
-              "none",
-          }}
-        >
+      {stage === "walk" &&
+        assetsReady && (
           <div
             style={{
-              height:
-                "3px",
+              position:
+                "absolute",
 
-              background:
-                "rgba(255,255,255,0.16)",
+              left:
+                "50%",
 
-              overflow:
-                "hidden",
+              bottom:
+                "6vh",
+
+              transform:
+                "translateX(-50%)",
+
+              zIndex: 20,
+
+              width:
+                "min(360px, 72vw)",
+
+              pointerEvents:
+                "none",
             }}
           >
             <div
               style={{
-                width:
-                  `${walkProgress}%`,
-
                 height:
-                  "100%",
+                  "3px",
 
                 background:
-                  "rgba(255,255,255,0.9)",
+                  "rgba(255,255,255,0.16)",
 
-                transition:
-                  "width 120ms linear",
+                overflow:
+                  "hidden",
               }}
-            />
+            >
+              <div
+                style={{
+                  width:
+                    `${walkProgress}%`,
+
+                  height:
+                    "100%",
+
+                  background:
+                    "rgba(255,255,255,0.9)",
+                }}
+              />
+            </div>
+
+            <p
+              style={{
+                margin:
+                  "12px 0 0",
+
+                textAlign:
+                  "center",
+
+                color:
+                  "rgba(255,255,255,0.72)",
+
+                fontSize:
+                  "10px",
+
+                letterSpacing:
+                  "0.28em",
+              }}
+            >
+              MOVE TOWARD
+              THE MOSQUE
+            </p>
           </div>
-
-          <p
-            style={{
-              margin:
-                "12px 0 0",
-
-              textAlign:
-                "center",
-
-              color:
-                "rgba(255,255,255,0.72)",
-
-              fontSize:
-                "10px",
-
-              letterSpacing:
-                "0.28em",
-            }}
-          >
-            MOVE TOWARD
-            THE MOSQUE
-          </p>
-        </div>
-      )}
+        )}
     </div>
   );
 }

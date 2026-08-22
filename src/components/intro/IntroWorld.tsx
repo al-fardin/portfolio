@@ -14,7 +14,10 @@ import {
 import * as THREE from "three";
 
 import CityScenery from "@/components/cinematic/CityScenery";
+
 import RoadRibbon from "@/components/cinematic/RoadRibbon";
+
+import BikeRevealSequence from "@/components/ride/BikeRevealSequence";
 
 import {
   getJourneyFrame,
@@ -50,8 +53,9 @@ export default function IntroWorld({
   stage,
   walkProgress,
 }: IntroWorldProps) {
-  const { camera } =
-    useThree();
+  const {
+    camera,
+  } = useThree();
 
   const lookTarget =
     useRef(
@@ -60,19 +64,6 @@ export default function IntroWorld({
 
   const initialized =
     useRef(false);
-
-  /* =========================================
-     IMPORTANT WORLD POINTS
-
-     Café / first city building:
-     ~0.018
-
-     Mosque:
-     ~0.083
-
-     Final intro camera:
-     mosque cross করার পরে
-  ========================================= */
 
   const cafeFrame =
     useMemo(
@@ -101,16 +92,6 @@ export default function IntroWorld({
       []
     );
 
-  /* =========================================
-     ACTUAL MOSQUE POSITION
-
-     CityScenery-এর MosqueLandmark-এর
-     same placement logic.
-
-     side = -1
-     offset = 22.5
-  ========================================= */
-
   const mosquePosition =
     useMemo(() => {
       return mosqueFrame.point
@@ -119,14 +100,9 @@ export default function IntroWorld({
           mosqueFrame.normal,
           -22.5
         );
-    }, [mosqueFrame]);
-
-  /* =========================================
-     INITIAL CAFÉ CAMERA
-
-     Start হবে café-এর পাশ থেকে,
-     road-এর দিকে diagonal cinematic view.
-  ========================================= */
+    }, [
+      mosqueFrame,
+    ]);
 
   useEffect(() => {
     if (
@@ -182,12 +158,17 @@ export default function IntroWorld({
 
   useFrame(
     (_, delta) => {
-      /* =====================================
-         CAFÉ OPENING
+      /*
+        transition stage-এর camera
+        BikeRevealSequence control করবে।
+      */
 
-         Camera café-এর side-এ থাকবে,
-         একটু floating cinematic movement।
-      ===================================== */
+      if (
+        stage ===
+        "transition"
+      ) {
+        return;
+      }
 
       if (
         stage === "cafe"
@@ -237,12 +218,6 @@ export default function IntroWorld({
         );
       }
 
-      /* =====================================
-         CAFÉ → MOSQUE WALK
-
-         Actual road curve follow করবে।
-      ===================================== */
-
       if (
         stage === "walk"
       ) {
@@ -257,13 +232,6 @@ export default function IntroWorld({
         const progress =
           easeInOut(raw);
 
-        /*
-          0.012 → 0.096
-
-          অর্থাৎ visitor café থেকে
-          mosque cross করে একটু সামনে যাবে।
-        */
-
         const pathT =
           THREE.MathUtils.lerp(
             0.012,
@@ -275,11 +243,6 @@ export default function IntroWorld({
           getJourneyFrame(
             pathT
           );
-
-        /*
-          Slight third-person /
-          walking-camera feel.
-        */
 
         const desiredCamera =
           frame.point
@@ -326,30 +289,10 @@ export default function IntroWorld({
         );
       }
 
-      /* =====================================
-         MOSQUE INTRO
-
-         Visitor mosque cross করেছে।
-
-         এখন camera mosque-এর পরে থাকবে,
-         তারপর smoothly turn করে mosque-এর
-         দিকে পিছনে তাকাবে।
-
-         Mosque পুরো background-এ থাকবে।
-      ===================================== */
-
       if (
         stage ===
-          "mosque" ||
-        stage ===
-          "transition"
+        "mosque"
       ) {
-        /*
-          Mosque cross করার পরে
-          road-এর opposite side থেকে
-          camera establish করছি।
-        */
-
         const desiredCamera =
           afterMosqueFrame.point
             .clone()
@@ -364,13 +307,6 @@ export default function IntroWorld({
 
         desiredCamera.y =
           4.15;
-
-        /*
-          Look directly toward mosque.
-
-          একটু upper-half target,
-          যাতে dome/minaret সুন্দর frame হয়।
-        */
 
         const desiredLook =
           mosquePosition.clone();
@@ -395,20 +331,16 @@ export default function IntroWorld({
                 delta
             )
         );
-      }
 
-      camera.lookAt(
-        lookTarget.current
-      );
+        camera.lookAt(
+          lookTarget.current
+        );
+      }
     }
   );
 
   return (
     <>
-      {/* =====================================
-          DUSK SKY
-      ===================================== */}
-
       <color
         attach="background"
         args={[
@@ -425,10 +357,6 @@ export default function IntroWorld({
         ]}
       />
 
-      {/* =====================================
-          LIGHTING
-      ===================================== */}
-
       <hemisphereLight
         args={[
           "#dec1ab",
@@ -438,9 +366,7 @@ export default function IntroWorld({
       />
 
       <ambientLight
-        intensity={
-          0.3
-        }
+        intensity={0.3}
       />
 
       <directionalLight
@@ -449,9 +375,7 @@ export default function IntroWorld({
           40,
           20,
         ]}
-        intensity={
-          2.8
-        }
+        intensity={2.8}
         color="#ffc28c"
         castShadow
       />
@@ -462,30 +386,18 @@ export default function IntroWorld({
           18,
           -30,
         ]}
-        intensity={
-          0.55
-        }
+        intensity={0.55}
         color="#a7b5c5"
       />
-
-      {/* =====================================
-          EXISTING REAL WORLD
-
-          Café
-          buildings
-          road
-          mosque
-
-          সব same থাকবে।
-      ===================================== */}
 
       <RoadRibbon />
 
       <CityScenery />
 
-      {/* =====================================
-          SUN / MOON
-      ===================================== */}
+      {stage ===
+        "transition" && (
+        <BikeRevealSequence />
+      )}
 
       <mesh
         position={[

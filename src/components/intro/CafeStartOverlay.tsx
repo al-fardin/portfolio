@@ -15,6 +15,12 @@ export default function CafeStartOverlay() {
         state.stage
     );
 
+  const assetsReady =
+    useIntroFlow(
+      (state) =>
+        state.assetsReady
+    );
+
   const setStage =
     useIntroFlow(
       (state) =>
@@ -22,43 +28,45 @@ export default function CafeStartOverlay() {
     );
 
   useEffect(() => {
+    /*
+      Loading complete না হলে
+      scroll/W listener-ই attach হবে না।
+    */
+
     if (
-      stage !== "cafe"
+      stage !== "cafe" ||
+      !assetsReady
     ) {
       return;
     }
 
-    const handleWheel =
-      (
-        event: WheelEvent
-      ) => {
-        if (
-          event.deltaY >
-          0
-        ) {
-          setStage(
-            "walk"
-          );
-        }
-      };
+    const handleWheel = (
+      event: WheelEvent
+    ) => {
+      if (
+        event.deltaY >
+        0
+      ) {
+        setStage(
+          "walk"
+        );
+      }
+    };
 
-    const handleKeyDown =
-      (
-        event: KeyboardEvent
-      ) => {
-        if (
-          event.key ===
-            "w" ||
-          event.key ===
-            "W" ||
-          event.key ===
-            "ArrowUp"
-        ) {
-          setStage(
-            "walk"
-          );
-        }
-      };
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      if (
+        event.key === "w" ||
+        event.key === "W" ||
+        event.key ===
+          "ArrowUp"
+      ) {
+        setStage(
+          "walk"
+        );
+      }
+    };
 
     window.addEventListener(
       "wheel",
@@ -86,18 +94,22 @@ export default function CafeStartOverlay() {
     };
   }, [
     stage,
+    assetsReady,
     setStage,
   ]);
 
   if (
-    stage !== "cafe"
+    stage !== "cafe" ||
+    !assetsReady
   ) {
     return null;
   }
 
   return (
     <>
-      {/* TOP LEFT */}
+      {/* =====================================
+          TOP LEFT
+      ===================================== */}
 
       <div
         style={{
@@ -117,6 +129,9 @@ export default function CafeStartOverlay() {
 
           pointerEvents:
             "none",
+
+          animation:
+            "cafeReveal 900ms cubic-bezier(.22,.61,.36,1) both",
         }}
       >
         <p
@@ -155,7 +170,9 @@ export default function CafeStartOverlay() {
         </h2>
       </div>
 
-      {/* BOTTOM CENTRE */}
+      {/* =====================================
+          BOTTOM
+      ===================================== */}
 
       <div
         style={{
@@ -181,6 +198,9 @@ export default function CafeStartOverlay() {
 
           pointerEvents:
             "none",
+
+          animation:
+            "cafeBottomReveal 1.1s 250ms cubic-bezier(.22,.61,.36,1) both",
         }}
       >
         <p
@@ -239,14 +259,46 @@ export default function CafeStartOverlay() {
 
       <style>
         {`
+          @keyframes cafeReveal {
+            from {
+              opacity: 0;
+              transform: translateY(-16px);
+            }
+
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          @keyframes cafeBottomReveal {
+            from {
+              opacity: 0;
+              transform:
+                translateX(-50%)
+                translateY(16px);
+            }
+
+            to {
+              opacity: 1;
+              transform:
+                translateX(-50%)
+                translateY(0);
+            }
+          }
+
           @keyframes introArrow {
             0%, 100% {
-              transform: translateY(0);
-              opacity: 0.45;
+              transform:
+                translateY(0);
+
+              opacity: .45;
             }
 
             50% {
-              transform: translateY(7px);
+              transform:
+                translateY(7px);
+
               opacity: 1;
             }
           }
